@@ -1,0 +1,1 @@
+UPDATE users SET hashed_password = '$2a$10$Ta16CdWCfe4YHJmk8oC6duE6dKElJAO08HejPAQgzumgUCHDjZ672' WHERE email = 'admin@trackify.com';

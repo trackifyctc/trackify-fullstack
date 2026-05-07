@@ -43,15 +43,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
     try {
+      console.log('AuthContext: Attempting login for', email);
       const response = await authApi.login(email, password);
+      console.log('AuthContext: Login response received, token:', response.access_token?.substring(0, 10) + '...');
       setAuthToken(response.access_token);
       
       // Fetch user details from API
       const userData = await authApi.me();
+      console.log('AuthContext: User data received:', userData);
       setUser(userData);
+      console.log('AuthContext: User state updated, returning true');
       return true;
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error('AuthContext: Login failed:', error);
       return false;
     } finally {
       setIsLoading(false);

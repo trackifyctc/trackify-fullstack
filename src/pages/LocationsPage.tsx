@@ -42,10 +42,8 @@ export function LocationsPage() {
   }, [fetchLocations]);
 
   // Get items count per location
-  const getItemsInLocation = (locationName: string) => {
-    return inventory.filter((item) => 
-      item.location.toLowerCase().includes(locationName.toLowerCase())
-    ).length;
+  const getItemsInLocation = (locationId: string) => {
+    return inventory.filter((item) => item.location_id === locationId).length;
   };
 
   const handleAddLocation = async () => {
@@ -85,9 +83,7 @@ export function LocationsPage() {
     : null;
 
   const itemsInSelectedLocation = selectedLocationData
-    ? inventory.filter((item) =>
-        item.location.toLowerCase().includes(selectedLocationData.name.toLowerCase())
-      )
+    ? inventory.filter((item) => item.location_id === selectedLocationData.id)
     : [];
 
   if (loading) {
@@ -186,7 +182,7 @@ export function LocationsPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {locations.map((location) => {
-                const itemsCount = getItemsInLocation(location.name);
+                const itemsCount = getItemsInLocation(location.id);
                 const capacity = location.capacity || 100;
                 const capacityPercent = Math.round((itemsCount / capacity) * 100);
 
@@ -333,11 +329,11 @@ export function LocationsPage() {
                             <span>Qty: {item.quantity}</span>
                             <span
                               className={`px-2 py-0.5 rounded text-xs ${
-                                item.status === 'Tersedia'
+                                item.status === 'TERSEDIA'
                                   ? 'bg-green-500/20 text-green-400'
-                                  : item.status === 'Berpindah'
+                                  : item.status === 'BERPINDAH'
                                   ? 'bg-amber-500/20 text-amber-400'
-                                  : item.status === 'Hilang'
+                                  : item.status === 'HILANG'
                                   ? 'bg-red-500/20 text-red-400'
                                   : 'bg-blue-500/20 text-blue-400'
                               }`}

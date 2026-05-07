@@ -24,14 +24,14 @@ export function InventoryPage() {
   const [statusFilter, setStatusFilter] = useState<InventoryStatus | 'all'>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [locations, setLocations] = useState<Location[]>([]);
-  const [newItemForm, setNewItemForm] = useState<InventoryCreate>({
+  const [newItemForm, setNewItemForm] = useState<Partial<InventoryCreate>>({
     name: '',
     barcode: '',
-    location: '',
-    status: 'Tersedia',
+    location_id: '',
     quantity: 1,
     category: '',
     description: '',
+    sku: '',
   });
 
   // Fetch locations from database
@@ -57,17 +57,18 @@ export function InventoryPage() {
   }, [inventory]);
 
   const statusColors: Record<InventoryStatus, string> = {
-    Tersedia: 'bg-green-500/20 text-green-400 border-green-500/30',
-    Diperbarui: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-    Berpindah: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-    Hilang: 'bg-red-500/20 text-red-400 border-red-500/30',
+    TERSEDIA: 'bg-green-500/20 text-green-400 border-green-500/30',
+    DIPERBARUI: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+    BERPINDAH: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+    HILANG: 'bg-red-500/20 text-red-400 border-red-500/30',
   };
 
   // Filter inventory based on search, status, and category
   const filteredInventory = inventory.filter((item) => {
+    const locationStr = typeof item.location === 'object' && item.location?.name ? item.location.name : (typeof item.location === 'string' ? item.location : '');
     const matchesSearch =
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      locationStr.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (item.barcode && item.barcode.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
     const matchesCategory = categoryFilter === 'all' || item.category === categoryFilter;
@@ -112,7 +113,17 @@ export function InventoryPage() {
 
   const handleUpdate = async (id: string, updates: Partial<InventoryItem>) => {
     try {
-      await inventoryApi.update(id, updates);
+      // Only send fields that UpdateInventoryDto accepts: name, description, quantity, status, location_id
+      const filteredUpdates: Record<string, any> = {};
+      
+      if (updates.name !== undefined && updates.name !== '') filteredUpdates.name = updates.name;
+      if (updates.description !== undefined) filteredUpdates.description = updates.description;
+      if (updates.quantity !== undefined) filteredUpdates.quantity = updates.quantity;
+      if (updates.status !== undefined && updates.status !== '') filteredUpdates.status = updates.status;
+      if (updates.location_id !== undefined && updates.location_id !== '') filteredUpdates.location_id = updates.location_id;
+
+      console.log('Sending update payload:', filteredUpdates);
+      await inventoryApi.update(id, filteredUpdates);
       await refresh();
       setEditingId(null);
       setEditForm({});
@@ -135,26 +146,35 @@ export function InventoryPage() {
   };
 
   const handleCreate = async () => {
-    if (!newItemForm.name || !newItemForm.location) {
-      alert('Please fill in required fields');
+    if (!newItemForm.name || !newItemForm.location_id) {
+      alert('Please fill in required fields (Name and Location)');
       return;
     }
 
     try {
-      const qrCode = generateQRCode();
-      await inventoryApi.create({
-        ...newItemForm,
-        qr_code: qrCode,
-      });
+      // Backend expects SKU. If not provided, generate from name and location.
+      const sku = newItemForm.sku || `SKU-${newItemForm.name.substring(0,3).toUpperCase()}-${Date.now().toString().slice(-4)}`;
+      
+      const payload = {
+        name: newItemForm.name,
+        description: newItemForm.description,
+        sku: sku,
+        barcode: newItemForm.barcode,
+        location_id: newItemForm.location_id,
+        category: newItemForm.category,
+        quantity: newItemForm.quantity,
+      };
+
+      await inventoryApi.create(payload);
 
       setNewItemForm({
         name: '',
         barcode: '',
-        location: '',
-        status: 'Tersedia',
+        location_id: '',
         quantity: 1,
         category: '',
         description: '',
+        sku: '',
       });
       setShowAddForm(false);
       await refresh();
@@ -214,13 +234,13 @@ export function InventoryPage() {
               className="px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
             />
             <select
-              value={newItemForm.location}
-              onChange={(e) => setNewItemForm({ ...newItemForm, location: e.target.value })}
+              value={newItemForm.location_id || ''}
+              onChange={(e) => setNewItemForm({ ...newItemForm, location_id: e.target.value })}
               className="px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
             >
               <option value="">Pilih Lokasi *</option>
               {locations.map((loc) => (
-                <option key={loc.id} value={loc.name}>{loc.name}</option>
+                <option key={loc.id} value={loc.id}>{loc.name}</option>
               ))}
             </select>
             <input
@@ -231,6 +251,13 @@ export function InventoryPage() {
               className="px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
             />
             <input
+              type="text"
+              placeholder="SKU"
+              value={newItemForm.sku || ''}
+              onChange={(e) => setNewItemForm({ ...newItemForm, sku: e.target.value })}
+              className="px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+            />
+            <input
               type="number"
               placeholder="Quantity"
               min="1"
@@ -238,16 +265,6 @@ export function InventoryPage() {
               onChange={(e) => setNewItemForm({ ...newItemForm, quantity: parseInt(e.target.value) || 1 })}
               className="px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
             />
-            <select
-              value={newItemForm.status}
-              onChange={(e) => setNewItemForm({ ...newItemForm, status: e.target.value as InventoryStatus })}
-              className="px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
-            >
-              <option value="Tersedia">Tersedia</option>
-              <option value="Diperbarui">Diperbarui</option>
-              <option value="Berpindah">Berpindah</option>
-              <option value="Hilang">Hilang</option>
-            </select>
           </div>
           <div className="mt-4">
             <textarea
@@ -290,10 +307,10 @@ export function InventoryPage() {
             className="pl-11 pr-8 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500 appearance-none"
           >
             <option value="all">Semua Status</option>
-            <option value="Tersedia">Tersedia</option>
-            <option value="Diperbarui">Diperbarui</option>
-            <option value="Berpindah">Berpindah</option>
-            <option value="Hilang">Hilang</option>
+            <option value="TERSEDIA">Tersedia</option>
+            <option value="DIPERBARUI">Diperbarui</option>
+            <option value="BERPINDAH">Berpindah</option>
+            <option value="HILANG">Hilang</option>
           </select>
         </div>
         {/* Category Filter */}
@@ -349,17 +366,17 @@ export function InventoryPage() {
                     <td className="px-6 py-4">
                       {isEditing ? (
                         <select
-                          value={editForm.location || ''}
-                          onChange={(e) => setEditForm({ ...editForm, location: e.target.value })}
+                          value={editForm.location_id || item.location_id || ''}
+                          onChange={(e) => setEditForm({ ...editForm, location_id: e.target.value })}
                           className="px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white text-sm w-full focus:outline-none focus:border-blue-500"
                         >
                           <option value="">Pilih Lokasi</option>
                           {locations.map((loc) => (
-                            <option key={loc.id} value={loc.name}>{loc.name}</option>
+                            <option key={loc.id} value={loc.id}>{loc.name}</option>
                           ))}
                         </select>
                       ) : (
-                        <span className="text-gray-300">{item.location}</span>
+                        <span className="text-gray-300">{typeof item.location === 'object' && item.location?.name ? item.location.name : item.location}</span>
                       )}
                     </td>
                     <td className="px-6 py-4">
@@ -381,10 +398,10 @@ export function InventoryPage() {
                           onChange={(e) => setEditForm({ ...editForm, status: e.target.value as InventoryStatus })}
                           className="px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white text-sm focus:outline-none focus:border-blue-500"
                         >
-                          <option value="Tersedia">Tersedia</option>
-                          <option value="Diperbarui">Diperbarui</option>
-                          <option value="Berpindah">Berpindah</option>
-                          <option value="Hilang">Hilang</option>
+                          <option value="TERSEDIA">Tersedia</option>
+                          <option value="DIPERBARUI">Diperbarui</option>
+                          <option value="BERPINDAH">Berpindah</option>
+                          <option value="HILANG">Hilang</option>
                         </select>
                       ) : (
                         <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${statusColors[item.status]}`}>
@@ -495,7 +512,11 @@ export function InventoryPage() {
               </div>
               <div className="text-center">
                 <p className="text-white font-semibold">{selectedItem.name}</p>
-                <p className="text-gray-400 text-sm">{selectedItem.location}</p>
+                <p className="text-gray-400 text-sm">
+                  {typeof selectedItem.location === 'object' && selectedItem.location?.name
+                    ? selectedItem.location.name
+                    : selectedItem.location || '-'}
+                </p>
                 <p className="text-gray-500 text-xs mt-2 font-mono">
                   {selectedItem.sku || selectedItem.qr_code || 'N/A'}
                 </p>
@@ -564,7 +585,11 @@ export function InventoryPage() {
                 </div>
                 <div>
                   <p className="text-gray-500 text-xs uppercase tracking-wider">Lokasi</p>
-                  <p className="text-white mt-1">{selectedItem.location}</p>
+                  <p className="text-white mt-1">
+                    {typeof selectedItem.location === 'object' && selectedItem.location?.name
+                      ? selectedItem.location.name
+                      : selectedItem.location || '-'}
+                  </p>
                 </div>
                 <div>
                   <p className="text-gray-500 text-xs uppercase tracking-wider">Jumlah</p>

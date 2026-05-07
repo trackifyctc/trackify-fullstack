@@ -9,6 +9,7 @@ import { HistoryPage } from './pages/HistoryPage';
 import { LocationsPage } from './pages/LocationsPage';
 import { DevicesPage } from './pages/DevicesPage';
 import { CameraActivityPage } from './pages/CameraActivityPage';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Protected Route Component
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -63,7 +64,9 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppRoutes />
+        <ErrorBoundary>
+          <AppRoutes />
+        </ErrorBoundary>
       </AuthProvider>
     </BrowserRouter>
   );

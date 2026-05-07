@@ -8,6 +8,16 @@ export function HistoryPage() {
   const [filterType, setFilterType] = useState<'all' | 'alerts' | 'scans' | 'updates'>('all');
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
 
+  const getUserDisplay = (user: unknown) => {
+    if (!user) return 'System';
+    if (typeof user === 'string') return user;
+    if (typeof user === 'object') {
+      const typedUser = user as { full_name?: string | null; name?: string | null; email?: string | null };
+      return typedUser.full_name || typedUser.name || typedUser.email || 'System';
+    }
+    return 'System';
+  };
+
   const formatTime = (timestamp: string) => {
     return new Date(timestamp).toLocaleString('id-ID', {
       year: 'numeric',
@@ -21,10 +31,12 @@ export function HistoryPage() {
   // Filter logs
   const filteredLogs = activityLogs.filter((log) => {
     // Search filter
+    const userDisplay = getUserDisplay(log.user).toLowerCase();
+    const locationName = log.location && typeof log.location === 'object' ? log.location.name : (typeof log.location === 'string' ? log.location : '');
     const matchesSearch =
       log.action.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (log.user && log.user.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (log.location && log.location.toLowerCase().includes(searchQuery.toLowerCase()));
+      userDisplay.includes(searchQuery.toLowerCase()) ||
+      (locationName && locationName.toLowerCase().includes(searchQuery.toLowerCase()));
 
     // Type filter
     let matchesType = true;
@@ -50,7 +62,7 @@ export function HistoryPage() {
     const rows = filteredLogs.map((log) => [
       formatTime(log.created_at),
       log.action,
-      log.user || 'System',
+      getUserDisplay(log.user),
       log.location || '-',
       log.has_barcode_scan ? 'Scan' : 'System',
       log.is_alert ? 'Yes' : 'No',
@@ -212,12 +224,16 @@ export function HistoryPage() {
                   <div className="flex flex-wrap gap-4 mt-2 text-sm">
                     <div className="flex items-center gap-1.5 text-gray-400">
                       <User className="w-4 h-4" />
-                      <span>{log.user || 'System'}</span>
+                      <span>{getUserDisplay(log.user)}</span>
                     </div>
                     {log.location && (
                       <div className="flex items-center gap-1.5 text-gray-400">
                         <MapPin className="w-4 h-4" />
-                        <span>{log.location}</span>
+                        <span>
+                          {typeof log.location === 'object' && log.location.name
+                            ? log.location.name
+                            : log.location}
+                        </span>
                       </div>
                     )}
                   </div>

@@ -18,14 +18,23 @@ export function LoginPage() {
     setIsLoading(true);
 
     try {
+      console.log('Starting login process...');
       const success = await login(email, password);
+      console.log('Login result:', success);
+      
       if (success) {
-        navigate('/');
+        console.log('Login successful, navigating to dashboard...');
+        // Add a small delay to ensure auth state is fully updated
+        setTimeout(() => {
+          navigate('/');
+        }, 100);
       } else {
+        console.log('Login failed: invalid credentials');
         setError('Email atau password salah');
       }
-    } catch {
-      setError('Terjadi kesalahan. Coba lagi.');
+    } catch (err) {
+      console.error('Login error:', err);
+      setError(err instanceof Error ? err.message : 'Terjadi kesalahan. Coba lagi.');
     } finally {
       setIsLoading(false);
     }

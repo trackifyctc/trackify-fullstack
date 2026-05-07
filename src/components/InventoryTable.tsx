@@ -163,12 +163,20 @@ export function InventoryTable({ inventory, onUpdate, onDelete, onCreate }: Inve
                     {isEditing ? (
                       <input
                         type="text"
-                        value={editForm.location || ''}
+                        value={
+                          typeof editForm.location === 'object' && editForm.location?.name
+                            ? editForm.location.name
+                            : editForm.location || ''
+                        }
                         onChange={(e) => setEditForm({ ...editForm, location: e.target.value })}
                         className="px-3 py-1 bg-gray-700 border border-gray-600 rounded text-white text-sm w-full focus:outline-none focus:border-blue-500"
                       />
                     ) : (
-                      <span className="text-gray-300">{item.location}</span>
+                      <span className="text-gray-300">
+                        {typeof item.location === 'object' && item.location?.name
+                          ? item.location.name
+                          : item.location || '-'}
+                      </span>
                     )}
                   </td>
                   <td className="px-6 py-4">

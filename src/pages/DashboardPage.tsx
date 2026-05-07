@@ -1,16 +1,33 @@
+import { useEffect } from 'react';
 import { Package, AlertTriangle, Archive, TrendingUp, MapPin, Cpu, QrCode, Activity } from 'lucide-react';
 import { useWarehouseData } from '../hooks/useWarehouseData';
 import { Link } from 'react-router-dom';
 
 export function DashboardPage() {
-  const { inventory, activityLogs, loading } = useWarehouseData();
+  const { inventory, activityLogs, loading, error } = useWarehouseData();
+  
+  useEffect(() => {
+    console.log('DashboardPage mounted/updated:', { loading, error, inventoryCount: inventory.length, logsCount: activityLogs.length });
+  }, [loading, error, inventory.length, activityLogs.length]);
 
-  const totalItems = inventory.reduce((sum, item) => sum + item.quantity, 0);
-  const itemsInUse = inventory
-    .filter((item) => item.status === 'Berpindah')
+  const inventoryItems = Array.isArray(inventory) ? inventory : [];
+
+  const getUserDisplay = (user: unknown) => {
+    if (!user) return 'System';
+    if (typeof user === 'string') return user;
+    if (typeof user === 'object') {
+      const typedUser = user as { full_name?: string | null; name?: string | null; email?: string | null };
+      return typedUser.full_name || typedUser.name || typedUser.email || 'System';
+    }
+    return 'System';
+  };
+
+  const totalItems = inventoryItems.reduce((sum, item) => sum + item.quantity, 0);
+  const itemsInUse = inventoryItems
+    .filter((item) => item.status === 'BERPINDAH')
     .reduce((sum, item) => sum + item.quantity, 0);
-  const availableItems = inventory
-    .filter((item) => item.status === 'Tersedia')
+  const availableItems = inventoryItems
+    .filter((item) => item.status === 'TERSEDIA')
     .reduce((sum, item) => sum + item.quantity, 0);
   const recentAlerts = activityLogs.filter((log) => log.is_alert).length;
 
@@ -80,10 +97,32 @@ export function DashboardPage() {
     },
   ];
 
+  // Show error state
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-white mb-2">Error Loading Dashboard</h2>
+          <p className="text-gray-400 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+          >
+            Reload Page
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
+          <p className="text-gray-400">Loading dashboard...</p>
+        </div>
       </div>
     );
   }
@@ -175,7 +214,7 @@ export function DashboardPage() {
                   <div>
                     <p className="text-sm font-medium text-white">{log.action}</p>
                     <p className="text-xs text-gray-400">
-                      {log.user} • {log.location || 'N/A'}
+                      {getUserDisplay(log.user)} • {log.location || 'N/A'}
                     </p>
                   </div>
                   <span className="text-xs text-gray-500">
@@ -205,7 +244,7 @@ export function DashboardPage() {
             </Link>
           </div>
           <div className="space-y-3">
-            {inventory
+            {inventoryItems
               .filter(
                 (item) =>
                   item.status === 'Hilang' ||
@@ -220,7 +259,11 @@ export function DashboardPage() {
                 >
                   <div>
                     <p className="text-sm font-medium text-white">{item.name}</p>
-                    <p className="text-xs text-gray-400">{item.location}</p>
+                    <p className="text-xs text-gray-400">
+                      {typeof item.location === 'object' && item.location?.name
+                        ? item.location.name
+                        : item.location || '-'}
+                    </p>
                   </div>
                   <span
                     className={`px-2 py-1 rounded text-xs font-medium ${

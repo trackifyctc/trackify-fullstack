@@ -6,6 +6,16 @@ interface ActivityLogsProps {
 }
 
 export function ActivityLogs({ logs }: ActivityLogsProps) {
+  const getUserDisplay = (user: unknown) => {
+    if (!user) return 'System';
+    if (typeof user === 'string') return user;
+    if (typeof user === 'object') {
+      const typedUser = user as { full_name?: string | null; name?: string | null; email?: string | null };
+      return typedUser.full_name || typedUser.name || typedUser.email || 'System';
+    }
+    return 'System';
+  };
+
   const formatTime = (timestamp: string) => {
     const date = new Date(timestamp);
     const now = new Date();
@@ -89,13 +99,17 @@ export function ActivityLogs({ logs }: ActivityLogsProps) {
                     <div className="flex flex-wrap gap-4 text-sm">
                       <div className="flex items-center gap-1.5 text-gray-400">
                         <User className="w-4 h-4" />
-                        <span>{log.user}</span>
+                        <span>{getUserDisplay(log.user)}</span>
                       </div>
 
                       {log.location && (
                         <div className="flex items-center gap-1.5 text-gray-400">
                           <MapPin className="w-4 h-4" />
-                          <span>{log.location}</span>
+                          <span>
+                            {typeof log.location === 'object' && log.location?.name
+                              ? log.location.name
+                              : log.location}
+                          </span>
                         </div>
                       )}
 

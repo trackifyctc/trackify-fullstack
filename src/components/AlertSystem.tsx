@@ -10,6 +10,16 @@ interface AlertSystemProps {
 export function AlertSystem({ alerts, onDismiss }: AlertSystemProps) {
   const [activeAlerts, setActiveAlerts] = useState<ActivityLog[]>([]);
 
+  const getUserDisplay = (user: unknown) => {
+    if (!user) return 'System';
+    if (typeof user === 'string') return user;
+    if (typeof user === 'object') {
+      const typedUser = user as { full_name?: string | null; name?: string | null; email?: string | null };
+      return typedUser.full_name || typedUser.name || typedUser.email || 'System';
+    }
+    return 'System';
+  };
+
   useEffect(() => {
     setActiveAlerts(alerts.filter(alert => alert.is_alert));
   }, [alerts]);
@@ -43,9 +53,9 @@ export function AlertSystem({ alerts, onDismiss }: AlertSystemProps) {
                   <p className="text-white font-semibold mb-2">{alert.action}</p>
                   <div className="space-y-1 text-sm text-red-50">
                     {alert.location && (
-                      <p>Location: {alert.location}</p>
+                      <p>Location: {typeof alert.location === 'object' && alert.location.name ? alert.location.name : alert.location}</p>
                     )}
-                    <p>User: {alert.user}</p>
+                    <p>User: {getUserDisplay(alert.user)}</p>
                     <p className="text-xs text-red-100">
                       {new Date(alert.created_at).toLocaleString()}
                     </p>

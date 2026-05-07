@@ -272,7 +272,11 @@ export function ScanPage() {
                     <p className="text-xs text-gray-400 mb-1 flex items-center gap-1">
                       <MapPin className="w-3 h-3" /> Location
                     </p>
-                    <p className="text-white font-medium">{scanResult.location}</p>
+                    <p className="text-white font-medium">
+                      {typeof scanResult.location === 'object' && scanResult.location?.name
+                        ? scanResult.location.name
+                        : scanResult.location}
+                    </p>
                   </div>
                   <div className="p-4 bg-gray-700/50 rounded-lg">
                     <p className="text-xs text-gray-400 mb-1 flex items-center gap-1">
@@ -286,11 +290,11 @@ export function ScanPage() {
                   <span className="text-gray-400">Status</span>
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      scanResult.status === 'Tersedia'
+                      scanResult.status === 'TERSEDIA'
                         ? 'bg-green-500/20 text-green-400'
-                        : scanResult.status === 'Diperbarui'
+                        : scanResult.status === 'DIPERBARUI'
                         ? 'bg-blue-500/20 text-blue-400'
-                        : scanResult.status === 'Berpindah'
+                        : scanResult.status === 'BERPINDAH'
                         ? 'bg-amber-500/20 text-amber-400'
                         : 'bg-red-500/20 text-red-400'
                     }`}

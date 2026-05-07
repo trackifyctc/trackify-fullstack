@@ -37,7 +37,7 @@ export function DevicesPage() {
     name: '',
     device_type: 'scanner',
     serial_number: '',
-    location: '',
+    location_id: '',
   });
 
   const fetchDevices = useCallback(async () => {
@@ -81,7 +81,7 @@ export function DevicesPage() {
 
     try {
       await devicesApi.create(newDevice);
-      setNewDevice({ name: '', device_type: 'scanner', serial_number: '', location: '' });
+      setNewDevice({ name: '', device_type: 'scanner', serial_number: '', location_id: '' });
       setShowAddForm(false);
       await fetchDevices();
     } catch (err) {
@@ -306,13 +306,13 @@ export function DevicesPage() {
               className="px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
             />
             <select
-              value={newDevice.location}
-              onChange={(e) => setNewDevice({ ...newDevice, location: e.target.value })}
+              value={newDevice.location_id || ''}
+              onChange={(e) => setNewDevice({ ...newDevice, location_id: e.target.value })}
               className="px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
             >
               <option value="">Pilih Lokasi</option>
               {locations.map((loc) => (
-                <option key={loc.id} value={loc.name}>{loc.name}</option>
+                <option key={loc.id} value={loc.id}>{loc.name}</option>
               ))}
             </select>
             <button
@@ -410,7 +410,13 @@ export function DevicesPage() {
                 </div>
                 <div>
                   <p className="text-gray-500">Location</p>
-                  <p className="text-gray-300">{device.location || '-'}</p>
+                  <p className="text-gray-300">
+                    {typeof device.location === 'object' && device.location?.name
+                      ? device.location.name
+                      : typeof device.location === 'string'
+                      ? device.location
+                      : '-'}
+                  </p>
                 </div>
                 <div>
                   <p className="text-gray-500">Last Seen</p>

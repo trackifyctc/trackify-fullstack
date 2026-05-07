@@ -9,13 +9,13 @@ interface DashboardProps {
 export function Dashboard({ inventory, recentAlerts }: DashboardProps) {
   const totalItems = inventory.reduce((sum, item) => sum + item.quantity, 0);
   const itemsInUse = inventory
-    .filter(item => item.status === 'Berpindah')
+    .filter(item => item.status === 'BERPINDAH')
     .reduce((sum, item) => sum + item.quantity, 0);
   const availableItems = inventory
-    .filter(item => item.status === 'Tersedia')
+    .filter(item => item.status === 'TERSEDIA')
     .reduce((sum, item) => sum + item.quantity, 0);
   const damagedOrMissing = inventory
-    .filter(item => item.status === 'Hilang')
+    .filter(item => item.status === 'HILANG')
     .reduce((sum, item) => sum + item.quantity, 0);
 
   const stats = [

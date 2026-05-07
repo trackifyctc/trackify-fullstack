@@ -5,7 +5,7 @@ services:
     container_name: trackify-db
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: trackify123
       POSTGRES_DB: trackify
     ports:
       - "5432:5432"
@@ -13,9 +13,52 @@ services:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
+      interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
+
+  # NestJS Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: trackify-backend
+    environment:
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: trackify123
+      DATABASE_NAME: trackify
+      JWT_SECRET: super-secret-change-me-in-production
+      NODE_ENV: development
+      PORT: 3001
+      FRONTEND_URL: http://localhost:5173
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend/src:/app/src
+    depends_on:
+      db:
+        condition: service_healthy
+    command: npm run start:dev
+
+  # React Frontend (Development mode with Vite)
+  frontend:
+    image: node:20-alpine
+    container_name: trackify-frontend
+    working_dir: /app
+    ports:
+      - "3000:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_URL=https://trackify-backend-production-1b28.up.railway.app/api
+    command: sh -c "npm install && npm run dev -- --host"
 
 volumes:
   postgres_data:

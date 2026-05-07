@@ -1,5 +1,5 @@
 // API Configuration
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://trackify-backend-production-1b28.up.railway.app/api';
 
 // Token management
 let authToken: string | null = localStorage.getItem('auth_token');
@@ -25,28 +25,49 @@ async function fetchApi<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-    ...(authToken && { Authorization: `Bearer ${authToken}` }),
-    ...options.headers,
-  };
+  try {
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+      ...(authToken && { Authorization: `Bearer ${authToken}` }),
+      ...options.headers,
+    };
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    ...options,
-    headers,
-  });
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      ...options,
+      headers,
+    });
 
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
-    throw new Error(error.detail || `HTTP ${response.status}`);
+    if (!response.ok) {
+      try {
+        const error = await response.json();
+        throw new Error(error.detail || error.message || `HTTP ${response.status}`);
+      } catch (parseErr) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+    }
+
+    // Handle 204 No Content
+    if (response.status === 204) {
+      return undefined as T;
+    }
+
+    return response.json();
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(`API Error: ${endpoint}`, error.message);
+      throw error;
+    }
+    throw new Error('Network or parsing error');
   }
+}
 
-  // Handle 204 No Content
-  if (response.status === 204) {
-    return undefined as T;
+type ListResponse<T> = T[] | { items: T[]; total?: number };
+
+function unwrapListResponse<T>(response: ListResponse<T>): T[] {
+  if (Array.isArray(response)) {
+    return response;
   }
-
-  return response.json();
+  return Array.isArray(response?.items) ? response.items : [];
 }
 
 // ============================================================================
@@ -105,7 +126,7 @@ export const authApi = {
 // ============================================================================
 // Inventory API
 // ============================================================================
-export type InventoryStatus = 'Tersedia' | 'Diperbarui' | 'Berpindah' | 'Hilang';
+export type InventoryStatus = 'TERSEDIA' | 'DIPERBARUI' | 'BERPINDAH' | 'HILANG';
 
 export interface InventoryItem {
   id: string;
@@ -115,7 +136,7 @@ export interface InventoryItem {
   barcode: string | null;
   qr_code: string | null;
   category: string;
-  location: string;
+  location: string | Location | any;
   location_id: string | null;
   status: InventoryStatus;
   quantity: number;
@@ -135,11 +156,8 @@ export interface InventoryCreate {
   description?: string;
   sku?: string;
   barcode?: string;
-  qr_code?: string;
   category?: string;
-  location: string;
   location_id?: string;
-  status?: InventoryStatus;
   quantity?: number;
   min_quantity?: number;
   max_quantity?: number;
@@ -155,7 +173,6 @@ export interface InventoryUpdate {
   barcode?: string | null;
   qr_code?: string | null;
   category?: string;
-  location?: string;
   location_id?: string | null;
   status?: InventoryStatus;
   quantity?: number;
@@ -193,7 +210,8 @@ export const inventoryApi = {
     if (params?.status) searchParams.set('status', params.status);
     if (params?.location) searchParams.set('location', params.location);
     const query = searchParams.toString();
-    return fetchApi<InventoryItem[]>(`/api/inventory${query ? `?${query}` : ''}`);
+    return fetchApi<ListResponse<InventoryItem>>(`/api/inventory${query ? `?${query}` : ''}`)
+      .then(unwrapListResponse);
   },
 
   get: (id: string) => fetchApi<InventoryItem>(`/api/inventory/${id}`),
@@ -272,7 +290,8 @@ export const locationsApi = {
     if (params?.floor) searchParams.set('floor', params.floor);
     if (params?.zone) searchParams.set('zone', params.zone);
     const query = searchParams.toString();
-    return fetchApi<Location[]>(`/api/locations${query ? `?${query}` : ''}`);
+    return fetchApi<ListResponse<Location>>(`/api/locations${query ? `?${query}` : ''}`)
+      .then(unwrapListResponse);
   },
 
   get: (id: string) => fetchApi<Location>(`/api/locations/${id}`),
@@ -312,7 +331,7 @@ export interface Device {
   device_type: DeviceType;
   serial_number: string;
   api_key: string;
-  location: string | null;
+  location: Location | string | null;
   location_id: string | null;
   status: DeviceStatus;
   last_heartbeat: string | null;
@@ -328,7 +347,6 @@ export interface DeviceCreate {
   name: string;
   device_type: DeviceType;
   serial_number: string;
-  location?: string;
   location_id?: string;
   firmware_version?: string;
   ip_address?: string;
@@ -370,7 +388,8 @@ export const devicesApi = {
     if (params?.is_active !== undefined)
       searchParams.set('is_active', params.is_active.toString());
     const query = searchParams.toString();
-    return fetchApi<Device[]>(`/api/devices${query ? `?${query}` : ''}`);
+    return fetchApi<ListResponse<Device>>(`/api/devices${query ? `?${query}` : ''}`)
+      .then(unwrapListResponse);
   },
 
   get: (id: string) => fetchApi<Device>(`/api/devices/${id}`),
@@ -433,7 +452,15 @@ export interface ActivityLog {
   user_id: string | null;
   action: string;
   action_type: string | null;
-  user: string | null;
+  user:
+    | string
+    | {
+        id: string;
+        email: string;
+        full_name?: string | null;
+        name?: string | null;
+      }
+    | null;
   location: string | null;
   has_barcode_scan: boolean;
   is_alert: boolean;
@@ -474,14 +501,16 @@ export const activityApi = {
     if (params?.start_date) searchParams.set('start_date', params.start_date);
     if (params?.end_date) searchParams.set('end_date', params.end_date);
     const query = searchParams.toString();
-    return fetchApi<ActivityLog[]>(`/api/activity/logs${query ? `?${query}` : ''}`);
+    return fetchApi<ListResponse<ActivityLog>>(`/api/activity/logs${query ? `?${query}` : ''}`)
+      .then(unwrapListResponse);
   },
 
   recent: (limit = 10) =>
     fetchApi<ActivityLog[]>(`/api/activity/recent?limit=${limit}`),
 
   alerts: (skip = 0, limit = 100) =>
-    fetchApi<ActivityLog[]>(`/api/activity/alerts?skip=${skip}&limit=${limit}`),
+    fetchApi<ListResponse<ActivityLog>>(`/api/activity/alerts?skip=${skip}&limit=${limit}`)
+      .then(unwrapListResponse),
 
   scans: (params?: {
     skip?: number;
@@ -499,7 +528,8 @@ export const activityApi = {
     if (params?.start_date) searchParams.set('start_date', params.start_date);
     if (params?.end_date) searchParams.set('end_date', params.end_date);
     const query = searchParams.toString();
-    return fetchApi<ScanHistory[]>(`/api/activity/scans${query ? `?${query}` : ''}`);
+    return fetchApi<ListResponse<ScanHistory>>(`/api/activity/scans${query ? `?${query}` : ''}`)
+      .then(unwrapListResponse);
   },
 
   stats: () => fetchApi<Record<string, number>>('/api/activity/stats'),
