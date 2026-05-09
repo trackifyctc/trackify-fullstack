@@ -1,5 +1,5 @@
 // API Configuration
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://trackify-backend-production-1b28.up.railway.app/api';
+const API_BASE_URL = 'https://trackify-backend-production-1b28.up.railway.app';
 
 // Token management
 let authToken: string | null = localStorage.getItem('auth_token');
