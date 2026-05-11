@@ -49,13 +49,13 @@ export function LoginPage() {
             <Warehouse className="w-12 h-12 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">Trackify</h1>
-          <p className="text-gray-400">Warehouse Inventory Management System</p>
+          <p className="text-gray-400">Sistem Manajemen Inventaris Kelas</p>
         </div>
 
         {/* Login Form */}
         <div className="bg-gray-800 rounded-xl border border-gray-700 p-8">
           <h2 className="text-xl font-semibold text-white mb-6 text-center">
-            Admin Login
+            Login Admin
           </h2>
 
           {error && (
@@ -76,7 +76,7 @@ export function LoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@trackify.com"
+                  placeholder="Masukkan email Anda"
                   className="w-full pl-11 pr-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
                   required
                 />
@@ -85,7 +85,7 @@ export function LoginPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Password
+                Kata Sandi
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
@@ -93,7 +93,7 @@ export function LoginPage() {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
+                  placeholder="Masukkan kata sandi Anda"
                   className="w-full pl-11 pr-12 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
                   required
                 />
@@ -119,27 +119,13 @@ export function LoginPage() {
               {isLoading ? (
                 <>
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  <span>Logging in...</span>
+                  <span>Masuk...</span>
                 </>
               ) : (
-                'Login'
+                'Masuk'
               )}
             </button>
           </form>
-
-          <div className="mt-6 pt-6 border-t border-gray-700">
-            <p className="text-sm text-gray-400 text-center">
-              Demo credentials:
-            </p>
-            <div className="mt-2 p-3 bg-gray-900 rounded-lg">
-              <p className="text-xs text-gray-500">
-                Email: <span className="text-gray-300">admin@trackify.com</span>
-              </p>
-              <p className="text-xs text-gray-500">
-                Password: <span className="text-gray-300">admin123</span>
-              </p>
-            </div>
-          </div>
         </div>
       </div>
     </div>

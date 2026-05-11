@@ -18,9 +18,9 @@ import {
 import { devicesApi, Device, DeviceCreate, DeviceType, getAuthToken, locationsApi, Location } from '../lib/api';
 
 const deviceTypes: { value: DeviceType; label: string }[] = [
-  { value: 'scanner', label: 'Barcode/RFID Scanner' },
-  { value: 'sensor', label: 'Sensor (Temperature/Motion)' },
-  { value: 'camera', label: 'Camera System' },
+  { value: 'scanner', label: 'Pemindai Barcode/RFID' },
+  { value: 'sensor', label: 'Sensor (Suhu/Gerakan)' },
+  { value: 'camera', label: 'Sistem Kamera' },
   { value: 'gateway', label: 'Gateway/Hub' },
 ];
 
@@ -146,13 +146,13 @@ export function DevicesPage() {
   };
 
   const formatLastSeen = (timestamp: string | null) => {
-    if (!timestamp) return 'Never';
+    if (!timestamp) return 'Tidak pernah';
     const diff = Date.now() - new Date(timestamp).getTime();
     const mins = Math.floor(diff / 60000);
-    if (mins < 1) return 'Just now';
-    if (mins < 60) return `${mins}m ago`;
+    if (mins < 1) return 'Baru saja';
+    if (mins < 60) return `${mins}m lalu`;
     const hours = Math.floor(mins / 60);
-    if (hours < 24) return `${hours}h ago`;
+    if (hours < 24) return `${hours}j lalu`;
     return new Date(timestamp).toLocaleDateString();
   };
 
@@ -178,14 +178,14 @@ export function DevicesPage() {
             className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
           >
             <RefreshCw className="w-4 h-4" />
-            Refresh
+            Segarkan
           </button>
           <button
             onClick={() => setShowApiDocs(!showApiDocs)}
             className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
           >
             <Settings className="w-4 h-4" />
-            API Docs
+            Dokumentasi API
           </button>
           <button
             onClick={() => setShowAddForm(!showAddForm)}
@@ -209,16 +209,16 @@ export function DevicesPage() {
         <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
           <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
             <Settings className="w-5 h-5 text-purple-400" />
-            Device API Documentation
+            Dokumentasi API Perangkat
           </h2>
           <div className="space-y-4 text-sm">
             <div className="p-4 bg-gray-900 rounded-lg">
-              <p className="text-gray-400 mb-2">Base URL:</p>
+              <p className="text-gray-400 mb-2">URL Basis:</p>
               <code className="text-green-400">https://api.trackify.com/v1/devices</code>
             </div>
 
             <div className="p-4 bg-gray-900 rounded-lg">
-              <p className="text-white font-semibold mb-2">Send Alert</p>
+              <p className="text-white font-semibold mb-2">Kirim Peringatan</p>
               <p className="text-gray-400 mb-2">POST /alert</p>
               <pre className="text-xs text-gray-300 overflow-x-auto">
 {`{
@@ -235,7 +235,7 @@ export function DevicesPage() {
             </div>
 
             <div className="p-4 bg-gray-900 rounded-lg">
-              <p className="text-white font-semibold mb-2">Heartbeat / Status Update</p>
+              <p className="text-white font-semibold mb-2">Detak Jantung / Pembaruan Status</p>
               <p className="text-gray-400 mb-2">POST /heartbeat</p>
               <pre className="text-xs text-gray-300 overflow-x-auto">
 {`{
@@ -253,7 +253,7 @@ export function DevicesPage() {
             </div>
 
             <div className="p-4 bg-gray-900 rounded-lg">
-              <p className="text-white font-semibold mb-2">Scan Item</p>
+              <p className="text-white font-semibold mb-2">Pindai Item</p>
               <p className="text-gray-400 mb-2">POST /scan</p>
               <pre className="text-xs text-gray-300 overflow-x-auto">
 {`{
@@ -266,9 +266,9 @@ export function DevicesPage() {
             </div>
 
             <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
-              <p className="text-amber-400 font-semibold mb-2">⚠️ Authentication</p>
+              <p className="text-amber-400 font-semibold mb-2">⚠️ Autentikasi</p>
               <p className="text-gray-300 text-xs">
-                Include the API key in the request body. Keep your API key secure and never expose it in client-side code.
+                Sertakan kunci API dalam badan permintaan. Jaga keamanan kunci API Anda dan jangan pernah memposting kode sisi klien.
               </p>
             </div>
           </div>
@@ -300,7 +300,7 @@ export function DevicesPage() {
             </select>
             <input
               type="text"
-              placeholder="Serial Number *"
+              placeholder="Nomor Serial *"
               value={newDevice.serial_number}
               onChange={(e) => setNewDevice({ ...newDevice, serial_number: e.target.value })}
               className="px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
@@ -339,7 +339,7 @@ export function DevicesPage() {
           </p>
         </div>
         <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
-          <p className="text-gray-400 text-sm">Warning</p>
+          <p className="text-gray-400 text-sm">Peringatan</p>
           <p className="text-2xl font-bold text-amber-400">
             {devices.filter((d) => d.status === 'warning').length}
           </p>
@@ -387,14 +387,14 @@ export function DevicesPage() {
                   <button
                     onClick={() => handleRegenerateApiKey(device.id)}
                     className="p-2 text-amber-400 hover:bg-amber-500/10 rounded-lg transition-colors"
-                    title="Regenerate API Key"
+                    title="Buat Ulang Kunci API"
                   >
                     <RefreshCw className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => handleDeleteDevice(device.id)}
                     className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
-                    title="Delete Device"
+                    title="Hapus Perangkat"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -403,13 +403,13 @@ export function DevicesPage() {
 
               <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
                 <div>
-                  <p className="text-gray-500">Type</p>
+                  <p className="text-gray-500">Tipe</p>
                   <p className="text-gray-300">
                     {deviceTypes.find((t) => t.value === device.device_type)?.label || device.device_type}
                   </p>
                 </div>
                 <div>
-                  <p className="text-gray-500">Location</p>
+                  <p className="text-gray-500">Lokasi</p>
                   <p className="text-gray-300">
                     {typeof device.location === 'object' && device.location?.name
                       ? device.location.name
@@ -419,7 +419,7 @@ export function DevicesPage() {
                   </p>
                 </div>
                 <div>
-                  <p className="text-gray-500">Last Seen</p>
+                  <p className="text-gray-500">Terakhir Dilihat</p>
                   <p className="text-gray-300">{formatLastSeen(device.last_heartbeat)}</p>
                 </div>
                 <div>
@@ -431,7 +431,7 @@ export function DevicesPage() {
               {/* API Key Section */}
               <div className="p-3 bg-gray-900 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-gray-500 text-xs">API Key</p>
+                  <p className="text-gray-500 text-xs">Kunci API</p>
                   <div className="flex gap-1">
                     <button
                       onClick={() => toggleApiKeyVisibility(device.id)}

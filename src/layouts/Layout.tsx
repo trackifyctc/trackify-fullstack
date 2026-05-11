@@ -23,12 +23,12 @@ import { useWarehouseData } from '../hooks/useWarehouseData';
 import { authApi } from '../lib/api';
 
 const navItems = [
-  { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/scan', icon: QrCode, label: 'Scan QR Code' },
+  { to: '/', icon: LayoutDashboard, label: 'Dasbor' },
+  { to: '/scan', icon: QrCode, label: 'Pindai Kode QR' },
   { to: '/inventory', icon: Package, label: 'Inventaris' },
-  { to: '/history', icon: History, label: 'History' },
-  { to: '/locations', icon: MapPin, label: 'Location' },
-  { to: '/devices', icon: Cpu, label: 'Device' },
+  { to: '/history', icon: History, label: 'Riwayat' },
+  { to: '/locations', icon: MapPin, label: 'Lokasi' },
+  { to: '/devices', icon: Cpu, label: 'Perangkat' },
   { to: '/camera-activity', icon: Camera, label: 'Aktivitas Kamera' },
 ];
 
@@ -186,7 +186,7 @@ export function Layout() {
                     className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-gray-600 transition-colors"
                   >
                     <LogOut className="w-4 h-4" />
-                    <span>Logout</span>
+                    <span>Keluar</span>
                   </button>
                 </div>
               )}
@@ -211,7 +211,7 @@ export function Layout() {
               <Menu className="w-5 h-5" />
             </button>
             <h1 className="text-lg font-semibold text-white">
-              Real-time Tracking System
+              Sistem Pelacakan Waktu Nyata
             </h1>
           </div>
 

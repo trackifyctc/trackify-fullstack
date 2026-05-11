@@ -63,13 +63,13 @@ export function InventoryTable({ inventory, onUpdate, onDelete, onCreate }: Inve
   return (
     <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
       <div className="flex items-center justify-between p-6 border-b border-gray-700">
-        <h2 className="text-xl font-bold text-white">Inventory Items</h2>
+        <h2 className="text-xl font-bold text-white">Item Inventaris</h2>
         <button
           onClick={() => setShowAddForm(!showAddForm)}
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
         >
           {showAddForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-          {showAddForm ? 'Cancel' : 'Add Item'}
+          {showAddForm ? 'Batal' : 'Tambah Item'}
         </button>
       </div>
 
@@ -78,7 +78,7 @@ export function InventoryTable({ inventory, onUpdate, onDelete, onCreate }: Inve
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             <input
               type="text"
-              placeholder="Item Name"
+              placeholder="Nama Item"
               value={newItemForm.name}
               onChange={(e) => setNewItemForm({ ...newItemForm, name: e.target.value })}
               className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
@@ -92,7 +92,7 @@ export function InventoryTable({ inventory, onUpdate, onDelete, onCreate }: Inve
             />
             <input
               type="text"
-              placeholder="Location"
+              placeholder="Lokasi"
               value={newItemForm.location}
               onChange={(e) => setNewItemForm({ ...newItemForm, location: e.target.value })}
               className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
@@ -102,17 +102,17 @@ export function InventoryTable({ inventory, onUpdate, onDelete, onCreate }: Inve
               onChange={(e) => setNewItemForm({ ...newItemForm, status: e.target.value as InventoryStatus })}
               className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
             >
-              <option value="Available">Available</option>
-              <option value="Borrowed">Borrowed</option>
-              <option value="Missing">Missing</option>
-              <option value="Damaged">Damaged</option>
+              <option value="Available">Tersedia</option>
+              <option value="Borrowed">Dipinjam</option>
+              <option value="Missing">Hilang</option>
+              <option value="Damaged">Rusak</option>
             </select>
             <button
               onClick={handleCreate}
               className="flex items-center justify-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
             >
               <Save className="w-4 h-4" />
-              Create
+              Buat
             </button>
           </div>
         </div>
@@ -122,12 +122,12 @@ export function InventoryTable({ inventory, onUpdate, onDelete, onCreate }: Inve
         <table className="w-full">
           <thead className="bg-gray-750">
             <tr>
-              <th className="text-left px-6 py-4 text-sm font-semibold text-gray-300">Name</th>
+              <th className="text-left px-6 py-4 text-sm font-semibold text-gray-300">Nama</th>
               <th className="text-left px-6 py-4 text-sm font-semibold text-gray-300">Barcode</th>
-              <th className="text-left px-6 py-4 text-sm font-semibold text-gray-300">Location</th>
+              <th className="text-left px-6 py-4 text-sm font-semibold text-gray-300">Lokasi</th>
               <th className="text-left px-6 py-4 text-sm font-semibold text-gray-300">Status</th>
-              <th className="text-left px-6 py-4 text-sm font-semibold text-gray-300">Quantity</th>
-              <th className="text-right px-6 py-4 text-sm font-semibold text-gray-300">Actions</th>
+              <th className="text-left px-6 py-4 text-sm font-semibold text-gray-300">Jumlah</th>
+              <th className="text-right px-6 py-4 text-sm font-semibold text-gray-300">Tindakan</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-700">
@@ -186,10 +186,10 @@ export function InventoryTable({ inventory, onUpdate, onDelete, onCreate }: Inve
                         onChange={(e) => setEditForm({ ...editForm, status: e.target.value as InventoryStatus })}
                         className="px-3 py-1 bg-gray-700 border border-gray-600 rounded text-white text-sm focus:outline-none focus:border-blue-500"
                       >
-                        <option value="Available">Available</option>
-                        <option value="Borrowed">Borrowed</option>
-                        <option value="Missing">Missing</option>
-                        <option value="Damaged">Damaged</option>
+                        <option value="Available">Tersedia</option>
+                        <option value="Borrowed">Dipinjam</option>
+                        <option value="Missing">Hilang</option>
+                        <option value="Damaged">Rusak</option>
                       </select>
                     ) : (
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${statusColors[item.status]}`}>

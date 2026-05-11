@@ -129,25 +129,25 @@ export function InventoryPage() {
       setEditForm({});
     } catch (err) {
       console.error('Update error:', err);
-      alert('Failed to update item');
+      alert('Gagal memperbarui item');
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this item?')) return;
+    if (!confirm('Yakin ingin menghapus item ini?')) return;
 
     try {
       await inventoryApi.delete(id);
       await refresh();
     } catch (err) {
       console.error('Delete error:', err);
-      alert('Failed to delete item');
+      alert('Gagal menghapus item');
     }
   };
 
   const handleCreate = async () => {
     if (!newItemForm.name || !newItemForm.location_id) {
-      alert('Please fill in required fields (Name and Location)');
+      alert('Harap isi bidang yang diperlukan (Nama dan Lokasi)');
       return;
     }
 
@@ -180,7 +180,7 @@ export function InventoryPage() {
       await refresh();
     } catch (err) {
       console.error('Create error:', err);
-      alert('Failed to create item');
+      alert('Gagal membuat item');
     }
   };
 
@@ -203,32 +203,32 @@ export function InventoryPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white mb-2">Inventaris</h1>
-          <p className="text-gray-400">Manage your warehouse inventory items</p>
+          <p className="text-gray-400">Kelola item inventaris</p>
         </div>
         <button
           onClick={() => setShowAddForm(!showAddForm)}
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
         >
           {showAddForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-          {showAddForm ? 'Cancel' : 'Add Item'}
+          {showAddForm ? 'Batal' : 'Tambah Item'}
         </button>
       </div>
 
       {/* Add Form */}
       {showAddForm && (
         <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Add New Item</h2>
+          <h2 className="text-lg font-semibold text-white mb-4">Tambah Item Baru</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <input
               type="text"
-              placeholder="Item Name *"
+              placeholder="Nama Item *"
               value={newItemForm.name}
               onChange={(e) => setNewItemForm({ ...newItemForm, name: e.target.value })}
               className="px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
             />
             <input
               type="text"
-              placeholder="Barcode (Optional)"
+              placeholder="Barcode (Opsional)"
               value={newItemForm.barcode || ''}
               onChange={(e) => setNewItemForm({ ...newItemForm, barcode: e.target.value })}
               className="px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
@@ -245,7 +245,7 @@ export function InventoryPage() {
             </select>
             <input
               type="text"
-              placeholder="Category"
+              placeholder="Kategori"
               value={newItemForm.category || ''}
               onChange={(e) => setNewItemForm({ ...newItemForm, category: e.target.value })}
               className="px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
@@ -259,7 +259,7 @@ export function InventoryPage() {
             />
             <input
               type="number"
-              placeholder="Quantity"
+              placeholder="Jumlah"
               min="1"
               value={newItemForm.quantity}
               onChange={(e) => setNewItemForm({ ...newItemForm, quantity: parseInt(e.target.value) || 1 })}
@@ -268,7 +268,7 @@ export function InventoryPage() {
           </div>
           <div className="mt-4">
             <textarea
-              placeholder="Description"
+              placeholder="Deskripsi"
               value={newItemForm.description || ''}
               onChange={(e) => setNewItemForm({ ...newItemForm, description: e.target.value })}
               rows={2}
@@ -281,7 +281,7 @@ export function InventoryPage() {
               className="flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
             >
               <Save className="w-4 h-4" />
-              Create Item
+              Buat Item
             </button>
           </div>
         </div>
@@ -293,7 +293,7 @@ export function InventoryPage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
           <input
             type="text"
-            placeholder="Search items..."
+            placeholder="Cari item..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-11 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
@@ -426,7 +426,7 @@ export function InventoryPage() {
                       <button
                         onClick={() => generateQRCodeImage(item)}
                         className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition-colors"
-                        title="View QR Code"
+                        title="Lihat Kode QR"
                       >
                         <QrCode className="w-5 h-5" />
                       </button>
@@ -526,7 +526,7 @@ export function InventoryPage() {
                 className="w-full flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
               >
                 <Download className="w-5 h-5" />
-                Download QR Code
+                Unduh Kode QR
               </button>
             </div>
           </div>

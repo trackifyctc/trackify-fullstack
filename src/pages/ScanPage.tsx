@@ -153,9 +153,9 @@ export function ScanPage() {
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-white mb-2">Scan QR Code</h1>
+        <h1 className="text-2xl font-bold text-white mb-2">Pindai Kode QR</h1>
         <p className="text-gray-400">
-          Scan item QR code or barcode to view details
+          Pindai kode QR atau barcode item untuk melihat detail
         </p>
       </div>
 
@@ -165,7 +165,7 @@ export function ScanPage() {
           <div className="p-6 border-b border-gray-700">
             <h2 className="text-lg font-semibold text-white flex items-center gap-2">
               <Camera className="w-5 h-5 text-blue-400" />
-              Camera Scanner
+              Pemindai Kamera
             </h2>
           </div>
 
@@ -224,21 +224,21 @@ export function ScanPage() {
           <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
             <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
               <Search className="w-5 h-5 text-blue-400" />
-              Manual Input
+              Input Manual
             </h2>
             <form onSubmit={handleManualSubmit} className="flex gap-3">
               <input
                 type="text"
                 value={manualInput}
                 onChange={(e) => setManualInput(e.target.value)}
-                placeholder="Enter QR code or barcode..."
+                placeholder="Masukkan kode QR atau barcode..."
                 className="flex-1 px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
               />
               <button
                 type="submit"
                 className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
               >
-                Search
+                Cari
               </button>
             </form>
           </div>
@@ -249,7 +249,7 @@ export function ScanPage() {
               <div className="p-6 border-b border-gray-700 bg-green-500/10">
                 <h2 className="text-lg font-semibold text-white flex items-center gap-2">
                   <CheckCircle className="w-5 h-5 text-green-400" />
-                  Item Found
+                  Item Ditemukan
                 </h2>
               </div>
               <div className="p-6 space-y-4">
@@ -262,7 +262,7 @@ export function ScanPage() {
                       {scanResult.name}
                     </h3>
                     <p className="text-gray-400">
-                      {scanResult.category || 'Uncategorized'}
+                      {scanResult.category || 'Tanpa Kategori'}
                     </p>
                   </div>
                 </div>
@@ -270,7 +270,7 @@ export function ScanPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="p-4 bg-gray-700/50 rounded-lg">
                     <p className="text-xs text-gray-400 mb-1 flex items-center gap-1">
-                      <MapPin className="w-3 h-3" /> Location
+                      <MapPin className="w-3 h-3" /> Lokasi
                     </p>
                     <p className="text-white font-medium">
                       {typeof scanResult.location === 'object' && scanResult.location?.name
@@ -280,7 +280,7 @@ export function ScanPage() {
                   </div>
                   <div className="p-4 bg-gray-700/50 rounded-lg">
                     <p className="text-xs text-gray-400 mb-1 flex items-center gap-1">
-                      <Hash className="w-3 h-3" /> Quantity
+                      <Hash className="w-3 h-3" /> Jumlah
                     </p>
                     <p className="text-white font-medium">{scanResult.quantity}</p>
                   </div>

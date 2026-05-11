@@ -7,13 +7,13 @@ interface ActivityLogsProps {
 
 export function ActivityLogs({ logs }: ActivityLogsProps) {
   const getUserDisplay = (user: unknown) => {
-    if (!user) return 'System';
+    if (!user) return 'Sistem';
     if (typeof user === 'string') return user;
     if (typeof user === 'object') {
-      const typedUser = user as { full_name?: string | null; name?: string | null; email?: string | null };
-      return typedUser.full_name || typedUser.name || typedUser.email || 'System';
+      const typedUser = user as { full_name?: string; name?: string; email?: string };
+      return typedUser.full_name || typedUser.name || typedUser.email || 'Sistem';
     }
-    return 'System';
+    return 'Sistem';
   };
 
   const formatTime = (timestamp: string) => {
@@ -24,12 +24,12 @@ export function ActivityLogs({ logs }: ActivityLogsProps) {
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 1) return 'Just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
+    if (diffMins < 1) return 'Baru saja';
+    if (diffMins < 60) return `${diffMins}m lalu`;
+    if (diffHours < 24) return `${diffHours}j lalu`;
+    if (diffDays < 7) return `${diffDays}h lalu`;
 
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleDateString('id-ID', {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
@@ -42,7 +42,7 @@ export function ActivityLogs({ logs }: ActivityLogsProps) {
       <div className="p-6 border-b border-gray-700">
         <h2 className="text-xl font-bold text-white flex items-center gap-2">
           <Clock className="w-6 h-6 text-blue-400" />
-          Activity History
+          Riwayat Aktivitas
         </h2>
       </div>
 
@@ -50,7 +50,7 @@ export function ActivityLogs({ logs }: ActivityLogsProps) {
         {logs.length === 0 ? (
           <div className="p-8 text-center text-gray-500">
             <Clock className="w-12 h-12 mx-auto mb-3 opacity-50" />
-            <p>No activity logs yet</p>
+            <p>Belum ada log aktivitas</p>
           </div>
         ) : (
           <div className="divide-y divide-gray-700">
@@ -87,7 +87,7 @@ export function ActivityLogs({ logs }: ActivityLogsProps) {
                         {log.is_alert && (
                           <span className="inline-flex items-center gap-1 text-xs text-red-400 font-semibold mt-1">
                             <AlertTriangle className="w-3 h-3" />
-                            UNAUTHORIZED MOVEMENT DETECTED
+                            PERGERAKAN TIDAK SAH TERDETEKSI
                           </span>
                         )}
                       </div>
@@ -116,7 +116,7 @@ export function ActivityLogs({ logs }: ActivityLogsProps) {
                       {log.has_barcode_scan && (
                         <div className="flex items-center gap-1.5 text-green-400">
                           <CheckCircle className="w-4 h-4" />
-                          <span>Barcode Scanned</span>
+                          <span>Barcode Dipindai</span>
                         </div>
                       )}
                     </div>

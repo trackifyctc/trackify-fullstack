@@ -11,13 +11,13 @@ export function AlertSystem({ alerts, onDismiss }: AlertSystemProps) {
   const [activeAlerts, setActiveAlerts] = useState<ActivityLog[]>([]);
 
   const getUserDisplay = (user: unknown) => {
-    if (!user) return 'System';
+    if (!user) return 'Sistem';
     if (typeof user === 'string') return user;
     if (typeof user === 'object') {
-      const typedUser = user as { full_name?: string | null; name?: string | null; email?: string | null };
-      return typedUser.full_name || typedUser.name || typedUser.email || 'System';
+      const typedUser = user as { full_name?: string; name?: string; email?: string };
+      return typedUser.full_name || typedUser.name || typedUser.email || 'Sistem';
     }
-    return 'System';
+    return 'Sistem';
   };
 
   useEffect(() => {
@@ -47,15 +47,15 @@ export function AlertSystem({ alerts, onDismiss }: AlertSystemProps) {
                   <div className="flex items-center gap-2 mb-1">
                     <Bell className="w-4 h-4 text-white animate-bounce" />
                     <h4 className="text-white font-bold text-sm uppercase tracking-wide">
-                      Security Alert
+                      Peringatan Keamanan
                     </h4>
                   </div>
                   <p className="text-white font-semibold mb-2">{alert.action}</p>
                   <div className="space-y-1 text-sm text-red-50">
                     {alert.location && (
-                      <p>Location: {typeof alert.location === 'object' && alert.location.name ? alert.location.name : alert.location}</p>
+                      <p>Lokasi: {typeof alert.location === 'object' && alert.location.name ? alert.location.name : alert.location}</p>
                     )}
-                    <p>User: {getUserDisplay(alert.user)}</p>
+                    <p>Pengguna: {getUserDisplay(alert.user)}</p>
                     <p className="text-xs text-red-100">
                       {new Date(alert.created_at).toLocaleString()}
                     </p>

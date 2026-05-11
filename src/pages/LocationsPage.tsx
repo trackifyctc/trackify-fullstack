@@ -100,7 +100,7 @@ export function LocationsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white mb-2">Lokasi</h1>
-          <p className="text-gray-400">Kelola lokasi dan zona gudang</p>
+          <p className="text-gray-400">Kelola lokasi dan zona</p>
         </div>
         <div className="flex gap-3">
           <button

@@ -9,13 +9,13 @@ export function HistoryPage() {
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
 
   const getUserDisplay = (user: unknown) => {
-    if (!user) return 'System';
+    if (!user) return 'Sistem';
     if (typeof user === 'string') return user;
     if (typeof user === 'object') {
-      const typedUser = user as { full_name?: string | null; name?: string | null; email?: string | null };
-      return typedUser.full_name || typedUser.name || typedUser.email || 'System';
+      const typedUser = user as { full_name?: string; name?: string; email?: string };
+      return typedUser.full_name || typedUser.name || typedUser.email || 'Sistem';
     }
-    return 'System';
+    return 'Sistem';
   };
 
   const formatTime = (timestamp: string) => {
@@ -58,14 +58,14 @@ export function HistoryPage() {
 
   // Export logs to CSV
   const exportToCSV = () => {
-    const headers = ['Timestamp', 'Action', 'User', 'Location', 'Type', 'Alert'];
+    const headers = ['Waktu', 'Tindakan', 'Pengguna', 'Lokasi', 'Tipe', 'Peringatan'];
     const rows = filteredLogs.map((log) => [
       formatTime(log.created_at),
       log.action,
       getUserDisplay(log.user),
       log.location || '-',
-      log.has_barcode_scan ? 'Scan' : 'System',
-      log.is_alert ? 'Yes' : 'No',
+      log.has_barcode_scan ? 'Scan' : 'Sistem',
+      log.is_alert ? 'Ya' : 'Tidak',
     ]);
 
     const csv = [headers, ...rows].map((row) => row.join(',')).join('\n');
@@ -90,15 +90,15 @@ export function HistoryPage() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white mb-2">History</h1>
-          <p className="text-gray-400">View all activity and scan logs</p>
+          <h1 className="text-2xl font-bold text-white mb-2">Riwayat</h1>
+          <p className="text-gray-400">Lihat semua log aktivitas dan scan</p>
         </div>
         <button
           onClick={exportToCSV}
           className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
         >
           <Download className="w-4 h-4" />
-          Export CSV
+          Ekspor CSV
         </button>
       </div>
 
@@ -110,7 +110,7 @@ export function HistoryPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
             <input
               type="text"
-              placeholder="Search logs..."
+              placeholder="Cari log..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-11 pr-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
@@ -125,10 +125,10 @@ export function HistoryPage() {
               onChange={(e) => setFilterType(e.target.value as any)}
               className="w-full pl-11 pr-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500 appearance-none"
             >
-              <option value="all">All Types</option>
-              <option value="alerts">Alerts Only</option>
-              <option value="scans">Scans Only</option>
-              <option value="updates">Updates Only</option>
+              <option value="all">Semua Tipe</option>
+              <option value="alerts">Hanya Peringatan</option>
+              <option value="scans">Hanya Scan</option>
+              <option value="updates">Hanya Pembaruan</option>
             </select>
           </div>
 
@@ -148,23 +148,23 @@ export function HistoryPage() {
       {/* Stats Summary */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
-          <p className="text-gray-400 text-sm">Total Logs</p>
+          <p className="text-gray-400 text-sm">Total Log</p>
           <p className="text-2xl font-bold text-white">{activityLogs.length}</p>
         </div>
         <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
-          <p className="text-gray-400 text-sm">Alerts</p>
+          <p className="text-gray-400 text-sm">Peringatan</p>
           <p className="text-2xl font-bold text-red-400">
             {activityLogs.filter((l) => l.is_alert).length}
           </p>
         </div>
         <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
-          <p className="text-gray-400 text-sm">Scans</p>
+          <p className="text-gray-400 text-sm">Scan</p>
           <p className="text-2xl font-bold text-green-400">
             {activityLogs.filter((l) => l.has_barcode_scan).length}
           </p>
         </div>
         <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
-          <p className="text-gray-400 text-sm">Filtered</p>
+          <p className="text-gray-400 text-sm">Difilter</p>
           <p className="text-2xl font-bold text-blue-400">{filteredLogs.length}</p>
         </div>
       </div>
@@ -174,7 +174,7 @@ export function HistoryPage() {
         <div className="p-4 border-b border-gray-700">
           <h2 className="text-lg font-semibold text-white flex items-center gap-2">
             <Clock className="w-5 h-5 text-blue-400" />
-            Activity Logs
+            Log Aktivitas
           </h2>
         </div>
 
@@ -212,7 +212,7 @@ export function HistoryPage() {
                       {log.is_alert && (
                         <span className="inline-flex items-center gap-1 text-xs text-red-400 font-semibold mt-1">
                           <AlertTriangle className="w-3 h-3" />
-                          ALERT
+                          PERINGATAN
                         </span>
                       )}
                     </div>
@@ -251,7 +251,7 @@ export function HistoryPage() {
           {filteredLogs.length === 0 && (
             <div className="p-12 text-center text-gray-500">
               <Clock className="w-12 h-12 mx-auto mb-3 opacity-50" />
-              <p>No activity logs found</p>
+              <p>Tidak ada log aktivitas</p>
             </div>
           )}
         </div>

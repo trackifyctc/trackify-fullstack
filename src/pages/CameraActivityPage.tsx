@@ -154,7 +154,7 @@ export function CameraActivityPage() {
           className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
         >
           <RefreshCw className="w-4 h-4" />
-          Refresh
+          Segarkan
         </button>
       </div>
 
@@ -299,7 +299,7 @@ export function CameraActivityPage() {
                 {capture.is_alert && (
                   <div className="absolute top-2 right-2 px-2 py-1 bg-red-500 text-white text-xs rounded-full flex items-center gap-1">
                     <AlertTriangle className="w-3 h-3" />
-                    {capture.alert_type || 'Alert'}
+                    {capture.alert_type || 'Peringatan'}
                   </div>
                 )}
 
@@ -319,7 +319,7 @@ export function CameraActivityPage() {
                 <div className="mt-2 space-y-1 text-sm">
                   <div className="flex items-center gap-2 text-gray-400">
                     <Cpu className="w-4 h-4" />
-                    <span className="truncate">{capture.device_name || 'Unknown Device'}</span>
+                    <span className="truncate">{capture.device_name || 'Perangkat Tidak Diketahui'}</span>
                   </div>
                   <div className="flex items-center gap-2 text-gray-400">
                     <MapPin className="w-4 h-4" />
@@ -424,7 +424,7 @@ export function CameraActivityPage() {
                     <label className="text-sm text-gray-500">Perangkat</label>
                     <p className="text-white flex items-center gap-2">
                       <Cpu className="w-4 h-4 text-blue-400" />
-                      {selectedCapture.device_name || 'Unknown'}
+                      {selectedCapture.device_name || 'Tidak Diketahui'}
                     </p>
                   </div>
 

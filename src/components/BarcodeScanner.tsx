@@ -26,7 +26,7 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
         setIsScanning(true);
       }
     } catch (err) {
-      setError('Unable to access camera. Please check permissions or use manual input.');
+      setError('Tidak dapat mengakses kamera. Silakan periksa izin atau gunakan input manual.');
       console.error('Camera error:', err);
     }
   };
@@ -59,7 +59,7 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
         <div className="flex items-center justify-between p-6 border-b border-gray-700">
           <h2 className="text-xl font-bold text-white flex items-center gap-2">
             <Camera className="w-6 h-6 text-blue-400" />
-            Barcode Scanner
+            Pemindai Barcode
           </h2>
           <button
             onClick={onClose}
@@ -91,8 +91,8 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center text-gray-500">
                 <CameraOff className="w-16 h-16 mb-4" />
-                <p className="text-lg font-medium">Camera Not Active</p>
-                <p className="text-sm">Click button below to start scanning</p>
+                <p className="text-lg font-medium">Kamera Tidak Aktif</p>
+                <p className="text-sm">Klik tombol di bawah untuk mulai memindai</p>
               </div>
             )}
           </div>
@@ -110,7 +110,7 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
               >
                 <Camera className="w-5 h-5" />
-                Start Camera
+                Mulai Kamera
               </button>
             ) : (
               <button
@@ -118,19 +118,19 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors font-medium"
               >
                 <CameraOff className="w-5 h-5" />
-                Stop Camera
+                Hentikan Kamera
               </button>
             )}
           </div>
 
           <div className="border-t border-gray-700 pt-6">
-            <h3 className="text-white font-semibold mb-3">Manual Barcode Entry</h3>
+            <h3 className="text-white font-semibold mb-3">Input Barcode Manual</h3>
             <form onSubmit={handleManualSubmit} className="flex gap-3">
               <input
                 type="text"
                 value={manualInput}
                 onChange={(e) => setManualInput(e.target.value)}
-                placeholder="Enter barcode manually..."
+                placeholder="Masukkan barcode secara manual..."
                 className="flex-1 px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
               />
               <button
@@ -138,14 +138,14 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
                 className="flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium"
               >
                 <Search className="w-5 h-5" />
-                Search
+                Cari
               </button>
             </form>
           </div>
 
           <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
             <p className="text-blue-400 text-sm">
-              <strong>Tip:</strong> Position the barcode within the frame or use manual entry to search inventory items.
+              <strong>Tip:</strong> Posisikan barcode dalam bingkai atau gunakan input manual untuk mencari item inventaris.
             </p>
           </div>
         </div>

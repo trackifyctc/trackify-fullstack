@@ -13,13 +13,13 @@ export function DashboardPage() {
   const inventoryItems = Array.isArray(inventory) ? inventory : [];
 
   const getUserDisplay = (user: unknown) => {
-    if (!user) return 'System';
+    if (!user) return 'Sistem';
     if (typeof user === 'string') return user;
     if (typeof user === 'object') {
-      const typedUser = user as { full_name?: string | null; name?: string | null; email?: string | null };
-      return typedUser.full_name || typedUser.name || typedUser.email || 'System';
+      const typedUser = user as { full_name?: string; name?: string; email?: string };
+      return typedUser.full_name || typedUser.name || typedUser.email || 'Sistem';
     }
-    return 'System';
+    return 'Sistem';
   };
 
   const totalItems = inventoryItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -68,29 +68,29 @@ export function DashboardPage() {
 
   const quickActions = [
     {
-      label: 'Scan QR Code',
-      description: 'Scan item barcode/QR',
+      label: 'Pindai Kode QR',
+      description: 'Pindai barcode/QR item',
       icon: QrCode,
       link: '/scan',
       color: 'bg-blue-600 hover:bg-blue-700',
     },
     {
-      label: 'View Inventory',
-      description: 'Manage all items',
+      label: 'Lihat Inventaris',
+      description: 'Kelola semua item',
       icon: Package,
       link: '/inventory',
       color: 'bg-green-600 hover:bg-green-700',
     },
     {
-      label: 'Locations',
-      description: 'Manage zones',
+      label: 'Lokasi',
+      description: 'Kelola zona',
       icon: MapPin,
       link: '/locations',
       color: 'bg-purple-600 hover:bg-purple-700',
     },
     {
-      label: 'Devices',
-      description: 'Manage IoT devices',
+      label: 'Perangkat',
+      description: 'Kelola perangkat IoT',
       icon: Cpu,
       link: '/devices',
       color: 'bg-orange-600 hover:bg-orange-700',
@@ -103,13 +103,13 @@ export function DashboardPage() {
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
           <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-white mb-2">Error Loading Dashboard</h2>
+          <h2 className="text-2xl font-bold text-white mb-2">Kesalahan Memuat Dasbor</h2>
           <p className="text-gray-400 mb-4">{error}</p>
           <button
             onClick={() => window.location.reload()}
             className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
           >
-            Reload Page
+            Muat Ulang Halaman
           </button>
         </div>
       </div>
@@ -121,7 +121,7 @@ export function DashboardPage() {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
-          <p className="text-gray-400">Loading dashboard...</p>
+          <p className="text-gray-400">Memuat dasbor...</p>
         </div>
       </div>
     );
@@ -131,8 +131,8 @@ export function DashboardPage() {
     <div className="space-y-8">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-white mb-2">Dashboard</h1>
-        <p className="text-gray-400">Overview of your warehouse inventory</p>
+        <h1 className="text-2xl font-bold text-white mb-2">Dasbor</h1>
+        <p className="text-gray-400">Inventaris Kelas</p>
       </div>
 
       {/* Stats Grid */}
@@ -165,7 +165,7 @@ export function DashboardPage() {
 
       {/* Quick Actions */}
       <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
-        <h2 className="text-lg font-semibold text-white mb-4">Quick Actions</h2>
+        <h2 className="text-lg font-semibold text-white mb-4">Tindakan Cepat</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {quickActions.map((action) => {
             const Icon = action.icon;
@@ -191,13 +191,13 @@ export function DashboardPage() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-white flex items-center gap-2">
               <Activity className="w-5 h-5 text-blue-400" />
-              Recent Activity
+              Aktivitas Terbaru
             </h2>
             <Link
               to="/history"
               className="text-sm text-blue-400 hover:text-blue-300"
             >
-              View All
+              Lihat Semua
             </Link>
           </div>
           <div className="space-y-3">
@@ -224,7 +224,7 @@ export function DashboardPage() {
               </div>
             ))}
             {activityLogs.length === 0 && (
-              <p className="text-gray-500 text-center py-4">No recent activity</p>
+              <p className="text-gray-500 text-center py-4">Tidak ada aktivitas terbaru</p>
             )}
           </div>
         </div>
@@ -234,13 +234,13 @@ export function DashboardPage() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-white flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-amber-400" />
-              Items Needing Attention
+              Item yang Perlu Perhatian
             </h2>
             <Link
               to="/inventory"
               className="text-sm text-blue-400 hover:text-blue-300"
             >
-              View All
+              Lihat Semua
             </Link>
           </div>
           <div className="space-y-3">
