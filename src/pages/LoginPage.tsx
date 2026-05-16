@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Warehouse, Lock, Mail, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import logo from "../assets/images/LOGOTRACKIFY.png";
 
 export function LoginPage() {
   const [email, setEmail] = useState('');
@@ -46,7 +47,7 @@ export function LoginPage() {
         {/* Logo */}
         <div className="text-center mb-6">
           <div className="mb-0">
-            <img src="/src/assets/images/LOGOTRACKIFY.png" alt="Logo" className="w-56 h-56 mx-auto" />
+            <img src={logo} alt="Logo" className="w-56 h-56 mx-auto" />
           </div>
           <h1 className="text-3xl font-bold text-white mb-0"></h1>
           <p className="text-gray-400 -mt-12">Sistem Manajemen Inventaris Kelas</p>

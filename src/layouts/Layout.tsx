@@ -21,6 +21,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { AlertSystem } from '../components/AlertSystem';
 import { useWarehouseData } from '../hooks/useWarehouseData';
 import { authApi } from '../lib/api';
+import logo from "../assets/images/LOGOTRACKIFY.png";
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dasbor' },
@@ -101,7 +102,7 @@ export function Layout() {
         {/* Logo */}
         <div className="h-16 flex items-center justify-between px-4 border-b border-gray-700">
           <div className="flex items-center gap-3">
-            <img src="/src/assets/images/LOGOTRACKIFY.png" alt="Logo" className="w-16 h-16" />
+            <img src={logo} alt="Logo" className="w-16 h-16" />
             {sidebarOpen && (
               <span className="text-xl font-bold text-white">Trackify</span>
             )}
