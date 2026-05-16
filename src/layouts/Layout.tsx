@@ -101,9 +101,7 @@ export function Layout() {
         {/* Logo */}
         <div className="h-16 flex items-center justify-between px-4 border-b border-gray-700">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-600 rounded-lg">
-              <Warehouse className="w-6 h-6 text-white" />
-            </div>
+            <img src="/src/assets/images/LOGOTRACKIFY.png" alt="Logo" className="w-16 h-16" />
             {sidebarOpen && (
               <span className="text-xl font-bold text-white">Trackify</span>
             )}

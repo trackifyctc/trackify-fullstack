@@ -42,14 +42,14 @@ export function LoginPage() {
 
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-md -mt-12">
         {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center p-4 bg-blue-600 rounded-2xl mb-4">
-            <Warehouse className="w-12 h-12 text-white" />
+        <div className="text-center mb-6">
+          <div className="mb-0">
+            <img src="/src/assets/images/LOGOTRACKIFY.png" alt="Logo" className="w-56 h-56 mx-auto" />
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Trackify</h1>
-          <p className="text-gray-400">Sistem Manajemen Inventaris Kelas</p>
+          <h1 className="text-3xl font-bold text-white mb-0"></h1>
+          <p className="text-gray-400 -mt-12">Sistem Manajemen Inventaris Kelas</p>
         </div>
 
         {/* Login Form */}

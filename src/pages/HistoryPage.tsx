@@ -146,7 +146,7 @@ export function HistoryPage() {
       </div>
 
       {/* Stats Summary */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
           <p className="text-gray-400 text-sm">Total Log</p>
           <p className="text-2xl font-bold text-white">{activityLogs.length}</p>
@@ -155,12 +155,6 @@ export function HistoryPage() {
           <p className="text-gray-400 text-sm">Peringatan</p>
           <p className="text-2xl font-bold text-red-400">
             {activityLogs.filter((l) => l.is_alert).length}
-          </p>
-        </div>
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
-          <p className="text-gray-400 text-sm">Scan</p>
-          <p className="text-2xl font-bold text-green-400">
-            {activityLogs.filter((l) => l.has_barcode_scan).length}
           </p>
         </div>
         <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">

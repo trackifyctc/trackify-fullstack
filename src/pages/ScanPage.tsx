@@ -82,15 +82,17 @@ export function ScanPage() {
         await scanner.start(
           { facingMode: 'environment' },
           {
-            fps: 10,
-            qrbox: { width: 250, height: 250 },
-            aspectRatio: 16 / 9,
+            fps: 20,
+            qrbox: { width: 300, height: 300 },
+            aspectRatio: 1 / 1,
+            disableFlip: false,
           },
           (decodedText) => {
+            console.log('QR Code detected:', decodedText);
             // On successful scan
             handleScan(decodedText);
           },
-          () => {
+          (error) => {
             // Ignore QR code detection failures
           }
         );
