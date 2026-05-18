@@ -127,7 +127,6 @@ export function HistoryPage() {
             >
               <option value="all">Semua Tipe</option>
               <option value="alerts">Hanya Peringatan</option>
-              <option value="scans">Hanya Scan</option>
               <option value="updates">Hanya Pembaruan</option>
             </select>
           </div>
