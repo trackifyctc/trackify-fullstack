@@ -57,7 +57,6 @@ export class CameraCapturesController {
   }
 
   @Post()
-  @UseGuards(JwtGuard)
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createData: Partial<any>) {
     return this.cameraCapturesService.create(createData);
