@@ -281,36 +281,46 @@ export function CameraActivityPage() {
                 capture.is_alert ? 'border-red-500/50' : 'border-gray-700'
               }`}
             >
-              {/* Image */}
-              <div className="aspect-video bg-gray-900 relative">
-                {capture.image_url || capture.image_base64 ? (
-                  <img
-                    src={capture.image_url || capture.image_base64 || undefined}
-                    alt={capture.title || 'Capture'}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <Camera className="w-12 h-12 text-gray-600" />
-                  </div>
-                )}
-                
-                {/* Alert Badge */}
-                {capture.is_alert && (
-                  <div className="absolute top-2 right-2 px-2 py-1 bg-red-500 text-white text-xs rounded-full flex items-center gap-1">
-                    <AlertTriangle className="w-3 h-3" />
-                    {capture.alert_type || 'Peringatan'}
-                  </div>
-                )}
+      {/* Image */}
+      <div className="aspect-video bg-gray-900 relative">
+        {capture.image_url || capture.image_base64 ? (
+          <>
+            <img
+              src={capture.image_url || capture.image_base64 || undefined}
+              alt={capture.title || 'Capture'}
+              className="w-full h-full object-cover"
+            />
 
-                {/* Reviewed Badge */}
-                {capture.is_reviewed && (
-                  <div className="absolute top-2 left-2 p-1 bg-green-500 rounded-full">
-                    <CheckCircle className="w-4 h-4 text-white" />
-                  </div>
-                )}
-              </div>
+            {capture.video_url && (
+              <video
+                controls
+                className="w-full mt-2 rounded-lg"
+              >
+                <source src={capture.video_url} />
+              </video>
+            )}
+          </>
+        ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <Camera className="w-12 h-12 text-gray-600" />
+            </div>
+        )}
 
+        {/* Alert Badge */}
+        {capture.is_alert && (
+          <div className="absolute top-2 right-2 px-2 py-1 bg-red-500 text-white text-xs rounded-full flex items-center gap-1">
+            <AlertTriangle className="w-3 h-3" />
+            {capture.alert_type || 'Peringatan'}
+          </div>
+        )}
+
+        {/* Reviewed Badge */}
+        {capture.is_reviewed && (
+          <div className="absolute top-2 left-2 p-1 bg-green-500 rounded-full">
+            <CheckCircle className="w-4 h-4 text-white" />
+          </div>
+        )}
+      </div>
               {/* Info */}
               <div className="p-4">
                 <h3 className="text-white font-medium truncate">

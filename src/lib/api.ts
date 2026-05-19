@@ -581,6 +581,7 @@ export interface CameraCapture {
   device_id: string | null;
   location_id: string | null;
   image_url: string | null;
+  video_url: string | null;
   image_base64: string | null;
   thumbnail_url: string | null;
   title: string | null;
