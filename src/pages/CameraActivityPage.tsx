@@ -12,6 +12,7 @@ import {
   RefreshCw,
   ChevronLeft,
   ChevronRight,
+  Trash2,
 } from 'lucide-react';
 import { cameraCapturesApi, CameraCapture, CameraCaptureFilters, devicesApi, Device, getAuthToken } from '../lib/api';
 
@@ -22,6 +23,7 @@ export function CameraActivityPage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedCapture, setSelectedCapture] = useState<CameraCapture | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   // Filters
   const [filters, setFilters] = useState<CameraCaptureFilters>({
@@ -117,6 +119,28 @@ export function CameraActivityPage() {
       }
     } catch (err) {
       console.error('Error marking as reviewed:', err);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Apakah Anda yakin ingin menghapus item ini? Aksi ini tidak dapat dibatalkan.')) {
+      return;
+    }
+    
+    try {
+      setDeleting(id);
+      await cameraCapturesApi.delete(id);
+      
+      // Remove dari state
+      setCaptures(prev => prev.filter(c => c.id !== id));
+      setShowDetailModal(false);
+      
+      console.log('Item berhasil dihapus');
+    } catch (err) {
+      console.error('Error deleting capture:', err);
+      alert('Gagal menghapus item. Silakan coba lagi.');
+    } finally {
+      setDeleting(null);
     }
   };
 
@@ -503,6 +527,25 @@ export function CameraActivityPage() {
                       )}
                     </div>
                   </div>
+
+                  {/* Delete Button */}
+                  <button
+                    onClick={() => handleDelete(selectedCapture.id)}
+                    disabled={deleting === selectedCapture.id}
+                    className="w-full mt-4 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {deleting === selectedCapture.id ? (
+                      <>
+                        <div className="animate-spin h-4 w-4 border-b-2 border-white"></div>
+                        Menghapus...
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 className="w-4 h-4" />
+                        Hapus Item
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
             </div>

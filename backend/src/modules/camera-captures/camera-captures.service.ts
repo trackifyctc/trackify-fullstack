@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CameraCapture } from '@/entities';
+import axios from 'axios';
 
 @Injectable()
 export class CameraCapturesService {
@@ -45,9 +46,40 @@ export class CameraCapturesService {
 
   async delete(id: string): Promise<void> {
     const capture = await this.findById(id);
+
+    // Delete file dari Cloudinary jika ada
+    if (capture.image_url) {
+      await this.deleteFromCloudinary(capture.image_url);
+    }
+    
     await this.cameraCaptureRepository.remove(capture);
   }
 
+  private async deleteFromCloudinary(fileUrl: string): Promise<void> {
+    try {
+      const publicId = fileUrl.split('/').pop()?.split('.')[0];
+      
+      if (!publicId) return;
+
+      const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+      const apiKey = process.env.CLOUDINARY_API_KEY;
+      const apiSecret = process.env.CLOUDINARY_API_SECRET;
+      
+      // Detect resource type (image atau video)
+      const resourceType = fileUrl.includes('video') ? 'video' : 'image';
+      const url = `https://api.cloudinary.com/v1_1/${cloudName}/resources/${resourceType}/upload`;
+      
+      await axios.delete(`${url}/${publicId}`, {
+        auth: {
+          username: apiKey,
+          password: apiSecret,
+        },
+      });
+    } catch (err) {
+      console.error('Error deleting from Cloudinary:', err);
+      // Lanjutkan delete dari DB meski Cloudinary gagal
+    }
+  }
   async findAlerts(skip: number = 0, take: number = 20): Promise<any> {
     const [items, total] = await this.cameraCaptureRepository.findAndCount({
       where: { is_alert: true },
