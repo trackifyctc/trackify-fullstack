@@ -88,11 +88,7 @@ export function ScanPage() {
             disableFlip: false,
           },
           (decodedText) => {
-            console.log("================================");
-            console.log("QR Code detected:", decodedText);    
-            console.log("================================");
-
-            alert(decodedText);
+            alert("QR terbaca: " + decodedText);
 
             handleScan(decodedText);
           },
