@@ -13,7 +13,12 @@ export class CameraCapturesService {
 
   async create(createData: Partial<CameraCapture>): Promise<CameraCapture> {
     const capture = this.cameraCaptureRepository.create(createData);
-    return this.cameraCaptureRepository.save(capture);
+
+    const savedCapture =
+      await this.cameraCaptureRepository.save(capture);
+
+    await this.sendTelegramNotification(savedCapture);
+    return savedCapture;
   }
 
   async findAll(skip: number = 0, take: number = 20): Promise<any> {
@@ -98,6 +103,29 @@ export class CameraCapturesService {
     capture.reviewed_by = reviewedBy;
     capture.reviewed_at = new Date();
     return this.cameraCaptureRepository.save(capture);
+  }
+
+  private async sendTelegramNotification(capture: CameraCapture) {
+    try {
+      const token = process.env.TELEGRAM_BOT_TOKEN;
+      const chatId = process.env.TELEGRAM_CHAT_ID;
+
+      const message = `🚨 Aktivitas Terdeteksi
+
+  Waktu: ${new Date().toLocaleString('id-ID')}
+
+  Gambar hasil deteksi telah tersimpan pada sistem Trackify.`;
+
+      await axios.post(
+        `https://api.telegram.org/bot${token}/sendMessage`,
+        {
+          chat_id: chatId,
+          text: message,
+        },
+      );
+    } catch (error) {
+      console.error('Telegram Error:', error);
+    }
   }
 
   async getStats(): Promise<any> {
