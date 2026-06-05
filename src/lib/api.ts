@@ -603,6 +603,7 @@ export interface CameraCaptureCreate {
   device_id?: string;
   location_id?: string;
   image_url?: string;
+  video_url?: string;
   image_base64?: string;
   thumbnail_url?: string;
   title?: string;
