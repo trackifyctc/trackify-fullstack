@@ -29,10 +29,9 @@ export class CameraCapturesController {
   @Get()
   @UseGuards(JwtGuard)
   async findAll(
-    @Query('skip') skip: number = 0,
-    @Query('take') take: number = 20,
+    @Query() query: any,
   ) {
-    return this.cameraCapturesService.findAll(skip, take);
+    return this.cameraCapturesService.findAll(query);
   }
 
   @Get('alerts')

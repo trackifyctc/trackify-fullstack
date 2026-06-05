@@ -369,10 +369,6 @@ export function CameraActivityPage() {
                 </h3>
                 <div className="mt-2 space-y-1 text-sm">
                   <div className="flex items-center gap-2 text-gray-400">
-                    <Cpu className="w-4 h-4" />
-                    <span className="truncate">{capture.device_name || 'Perangkat Tidak Diketahui'}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-400">
                     <MapPin className="w-4 h-4" />
                     <span className="truncate">{capture.location_name || '-'}</span>
                   </div>
@@ -436,11 +432,22 @@ export function CameraActivityPage() {
                 {/* Image */}
                 <div className="bg-gray-900 rounded-lg overflow-hidden">
                   {selectedCapture.image_url || selectedCapture.image_base64 ? (
-                    <img
-                      src={selectedCapture.image_url || selectedCapture.image_base64 || undefined}
-                      alt={selectedCapture.title || 'Capture'}
-                      className="w-full h-auto"
-                    />
+                    <>
+                      <img
+                        src={selectedCapture.image_url || selectedCapture.image_base64 || undefined}
+                        alt={selectedCapture.title || 'Capture'}
+                        className="w-full h-auto"
+                      />
+
+                      {selectedCapture.video_url && (
+                        <video
+                          controls
+                          className="w-full mt-4 rounded-lg"
+                        >
+                          <source src={selectedCapture.video_url} />
+                        </video>
+                      )}
+                    </>
                   ) : (
                     <div className="aspect-video flex items-center justify-center">
                       <Camera className="w-16 h-16 text-gray-600" />

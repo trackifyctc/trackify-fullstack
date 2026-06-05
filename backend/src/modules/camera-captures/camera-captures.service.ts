@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Between } from 'typeorm';
 import { CameraCapture } from '@/entities';
 import axios from 'axios';
 
@@ -20,16 +20,69 @@ export class CameraCapturesService {
     await this.sendTelegramNotification(savedCapture);
     return savedCapture;
   }
+  async findAll(filters: any): Promise<any> {
+    console.log('MASUK FINDALL');
+    console.log(filters);
+    const page = Number(filters.page) || 1;
+    const limit = Number(filters.limit) || 12;
 
-  async findAll(skip: number = 0, take: number = 20): Promise<any> {
-    const [items, total] = await this.cameraCaptureRepository.findAndCount({
-      skip,
-      take,
-      relations: ['device', 'location', 'reviewer'],
-      order: { created_at: 'DESC' },
-    });
+    const qb = this.cameraCaptureRepository
+      .createQueryBuilder('capture')
+      .leftJoinAndSelect('capture.device', 'device')
+      .leftJoinAndSelect('capture.location', 'location')
+      .leftJoinAndSelect('capture.reviewer', 'reviewer');
 
-    return { items, total };
+    if (filters.start_date) {
+      qb.andWhere(
+        'DATE(capture.created_at) >= :startDate',
+        {
+          startDate: filters.start_date,
+        },
+      );
+    }
+
+    if (filters.end_date) {
+      qb.andWhere(
+        'DATE(capture.created_at) <= :endDate',
+        {
+          endDate: filters.end_date,
+        },
+      );
+    }
+
+    if (filters.is_alert === 'true') {
+      qb.andWhere(
+        'capture.is_alert = :isAlert',
+        {
+          isAlert: true,
+        },
+      );
+    }
+
+    if (filters.is_reviewed === 'true') {
+      qb.andWhere(
+        'capture.is_reviewed = :isReviewed',
+        {
+          isReviewed: true,
+        },
+      );
+    }
+
+    qb.orderBy('capture.created_at', 'DESC');
+
+    qb.skip((page - 1) * limit);
+
+    qb.take(limit);
+
+    const [items, total] =
+      await qb.getManyAndCount();
+
+    return {
+      items,
+      total,
+      page,
+      pages: Math.ceil(total / limit),
+    };
   }
 
   async findById(id: string): Promise<CameraCapture> {

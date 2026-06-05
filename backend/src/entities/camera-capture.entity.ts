@@ -34,6 +34,9 @@ export class CameraCapture {
   @Column({ nullable: true })
   image_url: string;
 
+  @Column({ nullable: true })
+  video_url: string;
+
   @Column({ type: 'text', nullable: true })
   image_base64: string;
 

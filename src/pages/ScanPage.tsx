@@ -86,12 +86,9 @@ export function ScanPage() {
           { facingMode: 'environment' },
           {
             fps: 20,
-            qrbox: { 
-              width: Math.min(window.innerWidth * 0.75, 500),
-              height: Math.min(window.innerHeight * 0.5, 500)
-            },
             aspectRatio: 1 / 1,
-            disableFlip: false,},
+            disableFlip: false,
+          },
           (decodedText) => {
             console.log("QR Code detected:", decodedText);    
             handleScan(decodedText);
