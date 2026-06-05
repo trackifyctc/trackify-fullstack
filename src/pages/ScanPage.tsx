@@ -32,7 +32,10 @@ export function ScanPage() {
       }
 
       if (item) {
-        // Mark as scanned via API
+
+        console.log("HASIL ITEM:");
+        console.log(item);
+
         try {
           await inventoryApi.scan(item.id);
         } catch (scanErr) {
@@ -83,13 +86,14 @@ export function ScanPage() {
           { facingMode: 'environment' },
           {
             fps: 20,
-            qrbox: { width: 300, height: 300 },
+            qrbox: { 
+              width: Math.min(window.innerWidth * 0.75, 500),
+              height: Math.min(window.innerHeight * 0.5, 500)
+            },
             aspectRatio: 1 / 1,
-            disableFlip: false,
-          },
+            disableFlip: false,},
           (decodedText) => {
-            alert("QR terbaca: " + decodedText);
-
+            console.log("QR Code detected:", decodedText);    
             handleScan(decodedText);
           },
           (error) => {
@@ -175,12 +179,29 @@ export function ScanPage() {
             {/* Camera View */}
             <div className="bg-gray-900 rounded-lg overflow-hidden aspect-video relative mb-4">
               {cameraReady ? (
-                <div 
-                  id="qr-scanner-container" 
-                  ref={containerRef}
-                  className="w-full h-full"
-                  style={{ minHeight: '300px' }}
-                />
+                <div className="relative w-full h-full flex items-center justify-center" style={{ minHeight: '300px' }}>
+                  <div 
+                    id="qr-scanner-container" 
+                    ref={containerRef}
+                    className="w-full h-full"
+                  />
+                  {/* Kotak scan overlay putih */}
+                  <div 
+                    className="absolute border-2 border-white"
+                    style={{
+                      width: '300px',
+                      height: '300px',
+                      borderStyle: 'dashed',
+                      borderRadius: '8px',
+                    }}
+                  >
+                    {/* Corner markers */}
+                    <div className="absolute -top-2 -left-2 w-6 h-6 border-t-2 border-l-2 border-white"></div>
+                    <div className="absolute -top-2 -right-2 w-6 h-6 border-t-2 border-r-2 border-white"></div>
+                    <div className="absolute -bottom-2 -left-2 w-6 h-6 border-b-2 border-l-2 border-white"></div>
+                    <div className="absolute -bottom-2 -right-2 w-6 h-6 border-b-2 border-r-2 border-white"></div>
+                  </div>
+                </div>
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center text-gray-500" style={{ minHeight: '300px' }}>
                   <CameraOff className="w-16 h-16 mb-4" />

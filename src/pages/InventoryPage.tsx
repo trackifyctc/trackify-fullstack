@@ -595,16 +595,6 @@ export function InventoryPage() {
                   <p className="text-gray-500 text-xs uppercase tracking-wider">Jumlah</p>
                   <p className="text-white mt-1">{selectedItem.quantity} {selectedItem.unit}</p>
                 </div>
-                <div>
-                  <p className="text-gray-500 text-xs uppercase tracking-wider">Min / Max</p>
-                  <p className="text-white mt-1">{selectedItem.min_quantity} / {selectedItem.max_quantity || '∞'}</p>
-                </div>
-                {selectedItem.price && (
-                  <div>
-                    <p className="text-gray-500 text-xs uppercase tracking-wider">Harga</p>
-                    <p className="text-white mt-1">Rp {selectedItem.price.toLocaleString('id-ID')}</p>
-                  </div>
-                )}
               </div>
 
               {/* Scan Info */}

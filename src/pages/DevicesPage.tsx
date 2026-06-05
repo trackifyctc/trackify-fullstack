@@ -327,7 +327,7 @@ export function DevicesPage() {
       )}
 
       {/* Device Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
           <p className="text-gray-400 text-sm">Total Perangkat</p>
           <p className="text-2xl font-bold text-white">{devices.length}</p>
@@ -336,12 +336,6 @@ export function DevicesPage() {
           <p className="text-gray-400 text-sm">Online</p>
           <p className="text-2xl font-bold text-green-400">
             {devices.filter((d) => d.status === 'online').length}
-          </p>
-        </div>
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
-          <p className="text-gray-400 text-sm">Peringatan</p>
-          <p className="text-2xl font-bold text-amber-400">
-            {devices.filter((d) => d.status === 'warning').length}
           </p>
         </div>
         <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
@@ -421,10 +415,6 @@ export function DevicesPage() {
                 <div>
                   <p className="text-gray-500">Terakhir Dilihat</p>
                   <p className="text-gray-300">{formatLastSeen(device.last_heartbeat)}</p>
-                </div>
-                <div>
-                  <p className="text-gray-500">Firmware</p>
-                  <p className="text-gray-300">{device.firmware_version || '-'}</p>
                 </div>
               </div>
 

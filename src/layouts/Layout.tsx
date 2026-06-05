@@ -11,7 +11,6 @@ import {
   Menu,
   X,
   Warehouse,
-  Bell,
   User,
   ChevronDown,
   Key,
@@ -43,22 +42,12 @@ export function Layout() {
   });
   const [passwordError, setPasswordError] = useState('');
   const [passwordSuccess, setPasswordSuccess] = useState(false);
-  const [dismissedAlerts, setDismissedAlerts] = useState<Set<string>>(new Set());
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const { activityLogs } = useWarehouseData();
-
-  const activeAlerts = activityLogs.filter(
-    (log) => log.is_alert && !dismissedAlerts.has(log.id)
-  );
 
   const handleLogout = () => {
     logout();
     navigate('/login');
-  };
-
-  const handleDismissAlert = (id: string) => {
-    setDismissedAlerts((prev) => new Set(prev).add(id));
   };
 
   const handleChangePassword = async () => {
@@ -91,7 +80,6 @@ export function Layout() {
 
   return (
     <div className="min-h-screen bg-gray-900 flex">
-      <AlertSystem alerts={activeAlerts} onDismiss={handleDismissAlert} />
 
       {/* Sidebar */}
       <aside
@@ -215,12 +203,6 @@ export function Layout() {
           </div>
 
           <div className="flex items-center gap-3">
-            <button className="relative p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors">
-              <Bell className="w-5 h-5" />
-              {activeAlerts.length > 0 && (
-                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
-              )}
-            </button>
           </div>
         </header>
 

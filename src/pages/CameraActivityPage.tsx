@@ -24,6 +24,7 @@ export function CameraActivityPage() {
   const [selectedCapture, setSelectedCapture] = useState<CameraCapture | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
 
   // Filters
   const [filters, setFilters] = useState<CameraCaptureFilters>({
@@ -32,8 +33,7 @@ export function CameraActivityPage() {
   });
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [selectedDevice, setSelectedDevice] = useState('');
-  const [alertFilter, setAlertFilter] = useState<'all' | 'alerts' | 'normal'>('all');
+  const [alertFilter, setAlertFilter] = useState<'all' | 'alerts' | 'reviewed'>('all');
 
   // Pagination
   const [totalPages, setTotalPages] = useState(1);
@@ -51,6 +51,12 @@ export function CameraActivityPage() {
   }, []);
 
   const fetchCaptures = useCallback(async () => {
+    // Skip jika sedang mencari (search in progress)
+    if (isSearching) {
+      console.log('⏭️ Skip fetchCaptures karena isSearching = true');
+      return;
+    }
+
     if (!getAuthToken()) {
       setCaptures([]);
       setLoading(false);
@@ -65,8 +71,8 @@ export function CameraActivityPage() {
         ...filters,
         start_date: startDate || undefined,
         end_date: endDate || undefined,
-        device_id: selectedDevice || undefined,
-        is_alert: alertFilter === 'all' ? undefined : alertFilter === 'alerts',
+        is_alert: alertFilter === 'all' ? undefined : alertFilter === 'alerts' ? true : undefined,
+        is_reviewed: alertFilter === 'reviewed' ? true : undefined,
       };
 
       const response = await cameraCapturesApi.list(params);
@@ -79,7 +85,7 @@ export function CameraActivityPage() {
     } finally {
       setLoading(false);
     }
-  }, [filters, startDate, endDate, selectedDevice, alertFilter]);
+  }, [filters, startDate, endDate, alertFilter, isSearching]);
 
   useEffect(() => {
     fetchDevices();
@@ -90,8 +96,42 @@ export function CameraActivityPage() {
   }, [fetchCaptures]);
 
   const handleSearch = () => {
-    setFilters(prev => ({ ...prev, page: 1 }));
-    fetchCaptures();
+    console.log('🔍 Button Cari diklik!');
+    console.log('Auth token:', !!getAuthToken());
+    console.log('Filter values:', { startDate, endDate, alertFilter });
+    
+    setError(null);
+    setLoading(true);
+    setIsSearching(true);
+
+    (async () => {
+      try {
+        const params: CameraCaptureFilters = {
+          page: 1,
+          limit: 12,
+          start_date: startDate || undefined,
+          end_date: endDate || undefined,
+          is_alert: alertFilter === 'all' ? undefined : alertFilter === 'alerts' ? true : undefined,
+          is_reviewed: alertFilter === 'reviewed' ? true : undefined,
+        };
+
+        console.log('📤 Mengirim params:', params);
+        const response = await cameraCapturesApi.list(params);
+        console.log('📥 Response:', response);
+        
+        setCaptures(response.items || []);
+        setTotalPages(response.pages || 1);
+        setTotalItems(response.total || 0);
+        
+        console.log('✅ Data berhasil difilter!');
+      } catch (err: any) {
+        console.error('❌ Error:', err);
+        setError(`Gagal memfilter data: ${err?.message || String(err)}`);
+      } finally {
+        setLoading(false);
+        setIsSearching(false);
+      }
+    })();
   };
 
   const handlePageChange = (newPage: number) => {
@@ -185,7 +225,7 @@ export function CameraActivityPage() {
 
       {/* Filters */}
       <div className="bg-gray-800 rounded-xl border border-gray-700 p-4">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Date Range */}
           <div>
             <label className="block text-sm text-gray-400 mb-1">Tanggal Mulai</label>
@@ -212,39 +252,23 @@ export function CameraActivityPage() {
             </div>
           </div>
 
-          {/* Device Filter */}
-          <div>
-            <label className="block text-sm text-gray-400 mb-1">Perangkat</label>
-            <select
-              value={selectedDevice}
-              onChange={(e) => setSelectedDevice(e.target.value)}
-              className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
-            >
-              <option value="">Semua Perangkat</option>
-              {devices.map((device) => (
-                <option key={device.id} value={device.id}>
-                  {device.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
           {/* Alert Filter */}
           <div>
             <label className="block text-sm text-gray-400 mb-1">Tipe</label>
             <select
               value={alertFilter}
-              onChange={(e) => setAlertFilter(e.target.value as 'all' | 'alerts' | 'normal')}
+              onChange={(e) => setAlertFilter(e.target.value as 'all' | 'alerts' | 'reviewed')}
               className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
             >
               <option value="all">Semua</option>
-              <option value="alerts">Peringatan Saja</option>
-              <option value="normal">Normal Saja</option>
+              <option value="alerts">Peringatan</option>
+              <option value="reviewed">Sudah Diperiksa</option>
             </select>
           </div>
 
           {/* Search Button */}
-          <div className="flex items-end">
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">&nbsp;</label>
             <button
               onClick={handleSearch}
               className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
@@ -264,11 +288,7 @@ export function CameraActivityPage() {
       )}
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
-          <p className="text-gray-400 text-sm">Total Tangkapan</p>
-          <p className="text-2xl font-bold text-white">{totalItems}</p>
-        </div>
+      <div className="grid grid-cols-2 gap-4">
         <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
           <p className="text-gray-400 text-sm">Peringatan</p>
           <p className="text-2xl font-bold text-red-400">
@@ -280,10 +300,6 @@ export function CameraActivityPage() {
           <p className="text-2xl font-bold text-amber-400">
             {captures.filter(c => !c.is_reviewed).length}
           </p>
-        </div>
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
-          <p className="text-gray-400 text-sm">Perangkat Aktif</p>
-          <p className="text-2xl font-bold text-green-400">{devices.length}</p>
         </div>
       </div>
 
@@ -454,15 +470,6 @@ export function CameraActivityPage() {
                     </p>
                   </div>
 
-                  {/* Device */}
-                  <div>
-                    <label className="text-sm text-gray-500">Perangkat</label>
-                    <p className="text-white flex items-center gap-2">
-                      <Cpu className="w-4 h-4 text-blue-400" />
-                      {selectedCapture.device_name || 'Tidak Diketahui'}
-                    </p>
-                  </div>
-
                   {/* Location */}
                   <div>
                     <label className="text-sm text-gray-500">Lokasi</label>
@@ -507,7 +514,7 @@ export function CameraActivityPage() {
                         {selectedCapture.is_reviewed ? (
                           <p className="text-green-400 flex items-center gap-2">
                             <CheckCircle className="w-4 h-4" />
-                            Sudah diperiksa oleh {selectedCapture.reviewed_by}
+                            Sudah diperiksa {selectedCapture.reviewed_by}
                           </p>
                         ) : (
                           <p className="text-amber-400 flex items-center gap-2">

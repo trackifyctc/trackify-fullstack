@@ -205,7 +205,7 @@ export const inventoryApi = {
     const searchParams = new URLSearchParams();
     if (params?.skip) searchParams.set('skip', params.skip.toString());
     if (params?.limit) searchParams.set('limit', params.limit.toString());
-    if (params?.search) searchParams.set('search', params.search);
+    if (params?.search) searchParams.set('query', params.search);
     if (params?.category) searchParams.set('category', params.category);
     if (params?.status) searchParams.set('status', params.status);
     if (params?.location) searchParams.set('location', params.location);
