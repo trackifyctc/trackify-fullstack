@@ -506,16 +506,6 @@ export function CameraActivityPage() {
                     </div>
                   )}
 
-                  {/* Detected Objects */}
-                  {selectedCapture.detected_objects && (
-                    <div>
-                      <label className="text-sm text-gray-500">Objek Terdeteksi</label>
-                      <p className="text-gray-300">
-                        {selectedCapture.detected_count} objek
-                      </p>
-                    </div>
-                  )}
-
                   {/* Review Status */}
                   <div className="pt-4 border-t border-gray-700">
                     <div className="flex items-center justify-between">
