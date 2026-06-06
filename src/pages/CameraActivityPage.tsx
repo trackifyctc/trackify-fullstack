@@ -444,7 +444,10 @@ export function CameraActivityPage() {
                           controls
                           className="w-full mt-4 rounded-lg"
                         >
-                          <source src={selectedCapture.video_url} />
+                          <source
+                            src={selectedCapture.video_url}
+                            type="video/mp4"
+                          />
                         </video>
                       )}
                     </>
