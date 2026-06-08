@@ -10,6 +10,9 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
+  Headers,
+  BadRequestException,
+
 } from '@nestjs/common';
 import { DevicesService } from './devices.service';
 import { JwtGuard } from '@/guards/jwt.guard';
@@ -17,6 +20,28 @@ import { JwtGuard } from '@/guards/jwt.guard';
 @Controller('devices')
 export class DevicesController {
   constructor(private devicesService: DevicesService) {}
+
+  @Post('hardware/heartbeat')
+  async heartbeat(
+    @Headers('X-API-Key') apiKey: string,
+    @Body() data: any,
+  ) {
+    if (!apiKey) {
+      throw new BadRequestException(
+        'API key required',
+      );
+    }
+
+    const device =
+      await this.devicesService.findByApiKey(
+        apiKey,
+      );
+
+    return this.devicesService.updateHeartbeat(
+      device.id,
+      data,
+    );
+  }
 
   @Get()
   @UseGuards(JwtGuard)
