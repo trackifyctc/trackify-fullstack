@@ -411,7 +411,7 @@ export function CameraActivityPage() {
       {/* Detail Modal */}
       {showDetailModal && selectedCapture && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 rounded-xl border border-gray-700 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-gray-800 rounded-xl border border-gray-700 w-[95vw] max-w-7xl max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-700">
               <h2 className="text-xl font-semibold text-white flex items-center gap-2">
@@ -428,9 +428,9 @@ export function CameraActivityPage() {
 
             {/* Modal Body */}
             <div className="p-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1.2fr_1fr] gap-8">
                 {/* Image */}
-                <div className="bg-gray-900 rounded-lg overflow-hidden">
+                <div className="bg-gray-900 rounded-lg overflow-hidden lg:min-w-[420px]">
                   {selectedCapture.image_url || selectedCapture.image_base64 ? (
                     <>
                       <img
@@ -459,7 +459,7 @@ export function CameraActivityPage() {
                 </div>
 
                 {/* Details */}
-                <div className="space-y-4">
+                <div className="space-y-5 min-w-[300px]">
                   {/* Alert Badge */}
                   {selectedCapture.is_alert && (
                     <div className="p-3 bg-red-500/20 border border-red-500/30 rounded-lg">
@@ -508,7 +508,7 @@ export function CameraActivityPage() {
 
                   {/* Review Status */}
                   <div className="pt-4 border-t border-gray-700">
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col gap-4">
                       <div>
                         <label className="text-sm text-gray-500">Status Review</label>
                         {selectedCapture.is_reviewed ? (
@@ -527,7 +527,7 @@ export function CameraActivityPage() {
                       {!selectedCapture.is_reviewed && (
                         <button
                           onClick={() => handleMarkReviewed(selectedCapture.id)}
-                          className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center gap-2"
+                          className="w-full px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center justify-center gap-2"
                         >
                           <CheckCircle className="w-4 h-4" />
                           Tandai Diperiksa
@@ -540,7 +540,7 @@ export function CameraActivityPage() {
                   <button
                     onClick={() => handleDelete(selectedCapture.id)}
                     disabled={deleting === selectedCapture.id}
-                    className="w-full mt-4 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {deleting === selectedCapture.id ? (
                       <>
@@ -554,6 +554,46 @@ export function CameraActivityPage() {
                       </>
                     )}
                   </button>
+                </div>
+                {/* Riwayat Inventaris */}
+                <div className="border-l border-gray-700 pl-6 min-w-[320px]">
+                  <label className="text-sm text-gray-500 block mb-3">
+                    Riwayat Inventaris
+                  </label>
+
+                  {selectedCapture.inventory_events &&
+                  selectedCapture.inventory_events.length > 0 ? (
+                    <div className="space-y-3 max-h-[650px] overflow-y-auto pr-2">
+                      {selectedCapture.inventory_events.map((event, index) => (
+                        <div
+                          key={index}
+                          className="bg-gray-900 rounded-lg p-3"
+                        >
+                          <p className="text-white font-medium">
+                            {event.item}
+                          </p>
+
+                          <p className="text-xs text-gray-400">
+                            {new Date(event.time).toLocaleString("id-ID")}
+                          </p>
+
+                          <span
+                            className={`inline-block mt-2 px-2 py-1 rounded text-xs font-medium ${
+                              event.status === "MASUK"
+                                ? "bg-green-500/20 text-green-400"
+                                : "bg-red-500/20 text-red-400"
+                            }`}
+                          >
+                            {event.status}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500">
+                      Tidak ada riwayat inventaris
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

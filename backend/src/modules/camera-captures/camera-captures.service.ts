@@ -191,6 +191,31 @@ export class CameraCapturesService {
     }
   }
 
+  async addInventoryEvent(
+    captureId: string,
+    item: string,
+    status: string,
+  ) {
+    const capture =
+      await this.findById(captureId);
+
+    const currentEvents =
+      capture.inventory_events || [];
+
+    currentEvents.push({
+      item,
+      status,
+      time: new Date(),
+    });
+
+    capture.inventory_events =
+      currentEvents;
+
+    return this.cameraCaptureRepository.save(
+      capture,
+    );
+  }
+
   async getStats(): Promise<any> {
     const total = await this.cameraCaptureRepository.count();
     const alerts = await this.cameraCaptureRepository.count({

@@ -643,6 +643,13 @@ export interface CameraCapture {
   description: string | null;
   location_name: string | null;
   detected_objects: string | null;
+
+  inventory_events?: {
+    item: string;
+    status: string;
+    time: string;
+  }[];
+  
   detected_count: number;
   is_alert: boolean;
   alert_type: string | null;

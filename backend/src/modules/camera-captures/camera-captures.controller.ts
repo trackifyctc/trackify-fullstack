@@ -100,4 +100,20 @@ export class CameraCapturesController {
     createData.device_id = device.id;
     return this.cameraCapturesService.create(createData);
   }
+
+    @Post(':id/inventory-event')
+    async addInventoryEvent(
+      @Param('id') id: string,
+      @Body() body: {
+        item: string;
+        status: string;
+      },
+    ) {
+      return this.cameraCapturesService.addInventoryEvent(
+        id,
+        body.item,
+        body.status,
+      );
+    }
 }
+

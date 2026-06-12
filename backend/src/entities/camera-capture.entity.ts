@@ -55,6 +55,13 @@ export class CameraCapture {
   @Column({ type: 'jsonb', nullable: true })
   detected_objects: any;
 
+  @Column({
+    type: 'jsonb',
+    nullable: true,
+    default: () => "'[]'",
+  })
+  inventory_events: any;
+
   @Column({ default: 0 })
   detected_count: number;
 
