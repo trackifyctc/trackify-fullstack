@@ -12,14 +12,23 @@ import {
   HttpStatus,
   Headers,
   BadRequestException,
-
+  Request,
 } from '@nestjs/common';
 import { DevicesService } from './devices.service';
+import { ServoService } from './servo.service';
 import { JwtGuard } from '@/guards/jwt.guard';
+import { CreateServoCommandDto } from '@/dtos/servo-command.dto';
 
 @Controller('devices')
 export class DevicesController {
-  constructor(private devicesService: DevicesService) {}
+  constructor(
+    private devicesService: DevicesService,
+    private servoService: ServoService,
+  ) {}
+
+  // ============================================================
+  // DEVICE MANAGEMENT ENDPOINTS
+  // ============================================================
 
   @Post('hardware/heartbeat')
   async heartbeat(
@@ -27,20 +36,10 @@ export class DevicesController {
     @Body() data: any,
   ) {
     if (!apiKey) {
-      throw new BadRequestException(
-        'API key required',
-      );
+      throw new BadRequestException('API key required');
     }
-
-    const device =
-      await this.devicesService.findByApiKey(
-        apiKey,
-      );
-
-    return this.devicesService.updateHeartbeat(
-      device.id,
-      data,
-    );
+    const device = await this.devicesService.findByApiKey(apiKey);
+    return this.devicesService.updateHeartbeat(device.id, data);
   }
 
   @Get()
@@ -112,5 +111,53 @@ export class DevicesController {
   async resolveAlert(@Param('alertId') alertId: string) {
     return this.devicesService.resolveAlert(alertId);
   }
+
+  // ============================================================
+  // 🎥 SERVO CONTROL ENDPOINTS
+  // ============================================================
+
+  @Post(':deviceId/servo/command')
+  @UseGuards(JwtGuard)
+  async sendServoCommand(
+    @Param('deviceId') deviceId: string,
+    @Body() dto: CreateServoCommandDto,
+    @Request() req: any,
+  ) {
+    dto.device_id = deviceId;
+    return this.servoService.executeServoCommand(deviceId, dto, req.user.id);
+  }
+
+  @Get(':deviceId/servo/history')
+  @UseGuards(JwtGuard)
+  async getServoHistory(
+    @Param('deviceId') deviceId: string,
+  ) {
+    return this.servoService.getCommandHistory(deviceId);
+  }
+
+  @Get(':deviceId/servo/pending')
+  async getPendingCommand(
+    @Param('deviceId') deviceId: string,
+  ) {
+    return this.servoService.getPendingCommand(deviceId);
+  }
+
+  @Get(':deviceId/servo/stats')
+  @UseGuards(JwtGuard)
+  async getServoStats(@Param('deviceId') deviceId: string) {
+    return this.servoService.getStats(deviceId);
+  }
+
+  @Post('servo/:commandId/mark-executed')
+  async markServoExecuted(
+    @Param('commandId') commandId: string,
+    @Body() data: any,
+  ) {
+    return this.servoService.markAsExecuted(
+      commandId,
+      data.response_data,
+      data.status || 'success',
+      data.error_message,
+    );
+  }
 }
-      

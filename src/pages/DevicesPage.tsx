@@ -16,6 +16,7 @@ import {
   EyeOff,
 } from 'lucide-react';
 import { devicesApi, Device, DeviceCreate, DeviceType, getAuthToken, locationsApi, Location } from '../lib/api';
+import { ServoControlPanel } from '../components/ServoControlPanel';
 
 const deviceTypes: { value: DeviceType; label: string }[] = [
   { value: 'scanner', label: 'Pemindai Barcode/RFID' },
@@ -33,6 +34,7 @@ export function DevicesPage() {
   const [showApiDocs, setShowApiDocs] = useState(false);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [showApiKey, setShowApiKey] = useState<Set<string>>(new Set());
+  const [selectedDevice, setSelectedDevice] = useState<Device | null>(null)
   const [newDevice, setNewDevice] = useState<DeviceCreate>({
     name: '',
     device_type: 'scanner',
@@ -355,10 +357,12 @@ export function DevicesPage() {
       ) : (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {devices.map((device) => (
-          <div
+          <div 
             key={device.id}
-            className="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden"
+            className="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden cursor-pointer hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/10 transition-all"
+            onClick={() => setSelectedDevice(device)}
           >
+            {/* DEVICE CARD CONTENT */}
             <div className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
@@ -379,14 +383,20 @@ export function DevicesPage() {
                 </div>
                 <div className="flex gap-1">
                   <button
-                    onClick={() => handleRegenerateApiKey(device.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRegenerateApiKey(device.id);
+                    }}
                     className="p-2 text-amber-400 hover:bg-amber-500/10 rounded-lg transition-colors"
                     title="Buat Ulang Kunci API"
                   >
                     <RefreshCw className="w-4 h-4" />
                   </button>
                   <button
-                    onClick={() => handleDeleteDevice(device.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteDevice(device.id);
+                    }}
                     className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                     title="Hapus Perangkat"
                   >
@@ -424,7 +434,10 @@ export function DevicesPage() {
                   <p className="text-gray-500 text-xs">Kunci API</p>
                   <div className="flex gap-1">
                     <button
-                      onClick={() => toggleApiKeyVisibility(device.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleApiKeyVisibility(device.id);
+                      }}
                       className="p-1 text-gray-400 hover:text-gray-300"
                     >
                       {showApiKey.has(device.id) ? (
@@ -434,7 +447,10 @@ export function DevicesPage() {
                       )}
                     </button>
                     <button
-                      onClick={() => copyApiKey(device.api_key)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        copyApiKey(device.api_key);
+                      }}
                       className="p-1 text-gray-400 hover:text-gray-300"
                     >
                       {copiedKey === device.api_key ? (
@@ -452,17 +468,14 @@ export function DevicesPage() {
                 </code>
               </div>
             </div>
-
-            {/* Status Bar */}
-            <div
-              className={`px-5 py-2 text-sm font-medium flex items-center gap-2 ${
-                device.status === 'online'
-                  ? 'bg-green-500/10 text-green-400'
-                  : device.status === 'warning'
-                  ? 'bg-amber-500/10 text-amber-400'
-                  : 'bg-red-500/10 text-red-400'
-              }`}
-            >
+            {/* STATUS BAR */}
+            <div className={`px-5 py-2 text-sm font-medium flex items-center gap-2 ${
+              device.status === 'online'
+                ? 'bg-green-500/10 text-green-400'
+                : device.status === 'warning'
+                ? 'bg-amber-500/10 text-amber-400'
+                : 'bg-red-500/10 text-red-400'
+            }`}>
               {device.status === 'online' ? (
                 <Wifi className="w-4 h-4" />
               ) : device.status === 'warning' ? (
@@ -478,6 +491,75 @@ export function DevicesPage() {
           </div>
         ))}
       </div>
+      )}
+
+      {/* Device Detail Modal */}
+      {selectedDevice && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 rounded-xl border border-gray-700 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-gray-800 border-b border-gray-700 p-6 flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-white">{selectedDevice.name}</h2>
+              <button
+                onClick={() => setSelectedDevice(null)}
+                className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5 text-gray-400" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-6">
+              {/* Device Info */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-gray-400 text-sm">Tipe Perangkat</p>
+                  <p className="text-white font-semibold">
+                    {deviceTypes.find((t) => t.value === selectedDevice.device_type)?.label}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-gray-400 text-sm">Status</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <div
+                      className={`w-2 h-2 rounded-full ${getStatusColor(selectedDevice.status)}`}
+                    />
+                    <p className="text-white font-semibold capitalize">{selectedDevice.status}</p>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-gray-400 text-sm">Serial Number</p>
+                  <p className="text-white font-semibold">{selectedDevice.serial_number}</p>
+                </div>
+                <div>
+                  <p className="text-gray-400 text-sm">IP Address</p>
+                  <p className="text-white font-semibold">{selectedDevice.ip_address || '-'}</p>
+                </div>
+              </div>
+
+              {/* Servo Control Panel - Only for Camera Devices */}
+              {selectedDevice.device_type === 'camera' && (
+                <div className="border-t border-gray-700 pt-6">
+                  <h3 className="text-lg font-semibold text-white mb-4">🎥 Kontrol Servo Kamera</h3>
+                  <ServoControlPanel 
+                    device={selectedDevice}
+                    onCommandSent={() => {
+                      // Refresh device info jika diperlukan
+                      fetchDevices();
+                    }}
+                  />
+                </div>
+              )}
+
+              {/* Non-Camera Device Message */}
+              {selectedDevice.device_type !== 'camera' && (
+                <div className="border-t border-gray-700 pt-6">
+                  <p className="text-gray-400 text-center">
+                    Kontrol servo hanya tersedia untuk perangkat dengan tipe "Sistem Kamera"
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

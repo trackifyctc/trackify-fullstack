@@ -380,6 +380,29 @@ export interface DeviceAlert {
   created_at: string;
 }
 
+// ============================================================================
+// SERVO COMMAND TYPES
+// ============================================================================
+
+export enum ServoDirection {
+  UP = 'up',
+  DOWN = 'down',
+  LEFT = 'left',
+  RIGHT = 'right',
+  RESET = 'reset',
+}
+
+export interface ServoCommand {
+  id: string;
+  device_id: string;
+  direction: ServoDirection;
+  angle: number;
+  status: 'pending' | 'processing' | 'success' | 'failed';
+  created_at: string;
+  executed_at?: string;
+  error_message?: string;
+}
+
 export const devicesApi = {
   list: (params?: { status?: string; device_type?: string; is_active?: boolean }) => {
     const searchParams = new URLSearchParams();
@@ -440,6 +463,38 @@ export const devicesApi = {
   resolveAlert: (alertId: string) =>
     fetchApi<DeviceAlert>(`/api/devices/alerts/${alertId}/resolve`, {
       method: 'POST',
+    }),
+
+  // 🎥 SERVO COMMANDS
+  sendServoCommand: (deviceId: string, direction: string, angle?: number) =>
+    fetchApi<ServoCommand>(`/api/devices/${deviceId}/servo/command`, {
+      method: 'POST',
+      body: JSON.stringify({
+        device_id: deviceId,
+        direction,
+        angle: angle || 30,
+      }),
+    }),
+
+  getServoHistory: (deviceId: string) =>
+    fetchApi<ServoCommand[]>(`/api/devices/${deviceId}/servo/history`),
+
+  getServoStats: (deviceId: string) =>
+    fetchApi<{
+      total: number;
+      pending: number;
+      processing: number;
+      success: number;
+      failed: number;
+    }>(`/api/devices/${deviceId}/servo/stats`),
+
+  markServoExecuted: (commandId: string, responseData: any, status: string = 'success') =>
+    fetchApi<ServoCommand>(`/api/devices/servo/${commandId}/mark-executed`, {
+      method: 'POST',
+      body: JSON.stringify({
+        response_data: responseData,
+        status,
+      }),
     }),
 };
 
@@ -609,7 +664,6 @@ export interface CameraCaptureCreate {
   title?: string;
   description?: string;
   location_name?: string;
-  detected_objects?: string;
   detected_count?: number;
   is_alert?: boolean;
   alert_type?: string;

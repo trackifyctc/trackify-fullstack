@@ -7,3 +7,4 @@ export { DeviceAlert, AlertType, AlertSeverity } from './device-alert.entity';
 export { ActivityLog, ActionType } from './activity-log.entity';
 export { ScanHistory, ScanType } from './scan-history.entity';
 export { CameraCapture } from './camera-capture.entity';
+export { ServoCommand, ServoDirection } from './servo-command.entity';

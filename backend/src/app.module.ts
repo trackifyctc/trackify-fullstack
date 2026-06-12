@@ -27,6 +27,7 @@ import { ActivityModule } from './modules/activity/activity.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { CameraCapturesModule } from './modules/camera-captures/camera-captures.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { ServoCommand } from './entities/servo-command.entity';
 
 @Module({
   imports: [
@@ -43,7 +44,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
         username: configService.get('DATABASE_USER', 'postgres'),
         password: configService.get('DATABASE_PASSWORD', 'postgres'),
         database: configService.get('DATABASE_NAME', 'trackify'),
-        entities: [User, Inventory, Location, Device, DeviceAlert, ActivityLog, ScanHistory, Task, CameraCapture],
+        entities: [User, Inventory, Location, Device, DeviceAlert, ActivityLog, ScanHistory, Task, CameraCapture, ServoCommand],
         migrations: [__dirname + '/migrations/*{.ts,.js}'],
         synchronize: true,
         logging: configService.get('NODE_ENV') === 'development',
